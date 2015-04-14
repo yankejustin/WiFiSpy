@@ -74,12 +74,24 @@ namespace WiFiSpy
 
         private void ReadCapFiles()
         {
+            LoadingForm LoadForm = new LoadingForm();
+            LoadForm.Show();
+
             CapFiles.Clear();
             foreach (string capFilePath in Directory.GetFiles(Environment.CurrentDirectory + "\\Data\\Captures", "*.cap"))
             {
-                CapFile capFile = new CapFile(capFilePath);
+                CapFile capFile = new CapFile();
+
+
+                LoadForm.SetCapFile(capFile);
+                LoadForm.SetFileName(new FileInfo(capFilePath).Name);
+
+
+                capFile.ReadCap(capFilePath);
+
                 CapFiles.Add(capFile);
             }
+            LoadForm.Close();
         }
 
         private void RefreshGpsLocations()
@@ -104,12 +116,11 @@ namespace WiFiSpy
             FillHourlyChart();
             FillPieChart();
             FillStationWeekOverview();
+
             FillTrafficChart();
 
             FillStationList();
-
             RefreshGpsLocations();
-
             FillExtenderList();
         }
 
@@ -205,8 +216,8 @@ namespace WiFiSpy
                 {
                     station.SourceMacAddressStr,
                     station.Manufacturer,
-                    station.Probes.Count().ToString(),
-                    station.DataFrames.Count().ToString(),
+                    station.Probes.Length.ToString(),
+                    station.DataFrames.Length.ToString(),
                     station.ProbeNames,
                     station.DeviceTypeStr,
                     station.DeviceVersion,

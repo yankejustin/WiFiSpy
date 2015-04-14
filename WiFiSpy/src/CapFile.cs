@@ -11,6 +11,20 @@ namespace WiFiSpy.src
 {
     public class CapFile
     {
+        public delegate void ReadBeaconCallback(BeaconFrame beacon);
+        public event ReadBeaconCallback onReadBeacon;
+
+        public delegate void ReadAccessPointCallback(AccessPoint AP);
+        public event ReadAccessPointCallback onReadAccessPoint;
+
+        public delegate void ReadStationCallback(Station station);
+        public event ReadStationCallback onReadStation;
+
+        public delegate void ReadDataFrameCallback(DataFrame dataFrame);
+        public event ReadDataFrameCallback onReadDataFrame;
+
+
+
         private List<BeaconFrame> _beacons;
         private SortedList<long, AccessPoint> _accessPoints;
         private SortedList<string, AccessPoint[]> _APExtenders;
@@ -83,9 +97,15 @@ namespace WiFiSpy.src
             }
         }
 
-        public CapFile(string FilePath)
+        public CapFile()
         {
-            /**/ICaptureDevice device = null;
+            
+        }
+
+        public void ReadCap(string FilePath)
+        {
+            /**/
+            ICaptureDevice device = null;
 
             try
             {
@@ -117,9 +137,9 @@ namespace WiFiSpy.src
             {
                 long MacSourceAddrNumber = MacToLong(station.SourceMacAddress);
 
-                for(int i = 0; i < _dataFrames.Count; i++)
+                for (int i = 0; i < _dataFrames.Count; i++)
                 {
-                    if(_dataFrames[i].MacSourceAddressLong == MacSourceAddrNumber || _dataFrames[i].MacTargetAddressLong == MacSourceAddrNumber)
+                    if (_dataFrames[i].MacSourceAddressLong == MacSourceAddrNumber || _dataFrames[i].MacTargetAddressLong == MacSourceAddrNumber)
                     {
                         station.AddDataFrame(_dataFrames[i]);
                     }
@@ -139,7 +159,7 @@ namespace WiFiSpy.src
         {
             packetsProcessed++;
 
-            if (packetsProcessed == 38)
+            if (packetsProcessed == 3177)
             {
 
             }
@@ -157,10 +177,11 @@ namespace WiFiSpy.src
 
                 PacketDotNet.Ieee80211.DataDataFrame DataDataFrame = packet as PacketDotNet.Ieee80211.DataDataFrame;
 
+                DateTime ArrivalDate = e.Packet.Timeval.Date;
 
                 if (beacon != null)
                 {
-                    BeaconFrame beaconFrame = new BeaconFrame(beacon, e.Packet.Timeval.Date);
+                    BeaconFrame beaconFrame = new BeaconFrame(beacon, ArrivalDate);
                     _beacons.Add(beaconFrame);
 
                     long MacAddrNumber = MacToLong(beaconFrame.MacAddress);
@@ -174,10 +195,13 @@ namespace WiFiSpy.src
                         _accessPoints.Add(MacAddrNumber, AP);
                     }
                     AP.AddBeaconFrame(beaconFrame);
+
+                    if (onReadAccessPoint != null)
+                        onReadAccessPoint(AP);
                 }
                 else if (probeRequest != null)
                 {
-                    ProbePacket probe = new ProbePacket(probeRequest, e.Packet.Timeval.Date);
+                    ProbePacket probe = new ProbePacket(probeRequest, ArrivalDate);
                     Station station = null;
 
                     long MacAddrNumber = MacToLong(probe.SourceMacAddress);
@@ -189,20 +213,22 @@ namespace WiFiSpy.src
                     }
 
                     station.AddProbe(probe);
+
+                    if (onReadStation != null)
+                        onReadStation(station);
                 }
                 else if (DataFrame != null)
                 {
-                    DataFrame _dataFrame = new Packets.DataFrame(DataFrame, e.Packet.Timeval.Date);
+                    DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
 
                     //invalid packets are useless, probably encrypted
                     if (_dataFrame.IsValidPacket)
                     {
                         _dataFrames.Add(_dataFrame);
-                    }
-                }
-                else if (DataDataFrame != null)
-                {
 
+                        if (onReadDataFrame != null)
+                            onReadDataFrame(_dataFrame);
+                    }
                 }
             }
         }

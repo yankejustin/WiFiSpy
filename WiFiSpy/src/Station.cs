@@ -189,11 +189,11 @@ namespace WiFiSpy.src
             {
                 DateTime LastSeenDate = new DateTime();
 
-                for (int i = 0; i < Probes.Count(); i++)
+                foreach(ProbePacket probe in Probes)
                 {
-                    if (Probes[i].TimeStamp > LastSeenDate)
+                    if (probe.TimeStamp > LastSeenDate)
                     {
-                        LastSeenDate = Probes[i].TimeStamp;
+                        LastSeenDate = probe.TimeStamp;
                     }
                 }
                 return LastSeenDate;
@@ -207,12 +207,12 @@ namespace WiFiSpy.src
                 List<string> TempProbeNames = new List<string>();
                 string ProbeNames = "";
 
-                for (int i = 0; i < Probes.Count(); i++)
+                foreach(ProbePacket probe in Probes)
                 {
-                    if (!String.IsNullOrEmpty(Probes[i].SSID) && !TempProbeNames.Contains(Probes[i].SSID))
+                    if (!String.IsNullOrEmpty(probe.SSID) && !TempProbeNames.Contains(probe.SSID))
                     {
-                        ProbeNames += Probes[i].SSID + ",   ";
-                        TempProbeNames.Add(Probes[i].SSID);
+                        ProbeNames += probe.SSID + ",   ";
+                        TempProbeNames.Add(probe.SSID);
                     }
                 }
                 return ProbeNames;
@@ -279,6 +279,21 @@ namespace WiFiSpy.src
                 }
             }
             return "";
+        }
+
+        public bool HasGpsLocation(GpsLocation[] locations)
+        {
+            for(int i = 0; i < _probes.Count; i++)
+            {
+                for (int j = 0; j < locations.Length; j++)
+                {
+                    if (locations[j].IsNearby(_probes[i].TimeStamp))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

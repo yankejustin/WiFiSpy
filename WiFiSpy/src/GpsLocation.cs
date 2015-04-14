@@ -22,5 +22,13 @@ namespace WiFiSpy.src
         {
             return "Date:" + Time.ToString("dd-MM-yyyy HH:mm:ss") + ", long:" + Longitude + ", lat:" + Latitude;
         }
+
+        public bool IsNearby(DateTime TargetTime)
+        {
+            if (Time == null)
+                return false;
+
+            return Time.AddSeconds(-30) > TargetTime && TargetTime < Time.AddSeconds(30);
+        }
     }
 }

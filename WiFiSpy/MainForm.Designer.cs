@@ -75,6 +75,7 @@
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -100,7 +101,7 @@
             this.columnHeader21 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -146,7 +147,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1370, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1510, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -182,7 +183,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1370, 612);
+            this.tabControl1.Size = new System.Drawing.Size(1510, 612);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -370,7 +371,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1362, 586);
+            this.tabPage2.Size = new System.Drawing.Size(1502, 586);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Stations";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -390,7 +391,7 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.tabControl2);
-            this.splitContainer4.Size = new System.Drawing.Size(1356, 580);
+            this.splitContainer4.Size = new System.Drawing.Size(1496, 580);
             this.splitContainer4.SplitterDistance = 290;
             this.splitContainer4.TabIndex = 1;
             // 
@@ -404,14 +405,14 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1356, 29);
+            this.panel1.Size = new System.Drawing.Size(1496, 29);
             this.panel1.TabIndex = 1;
             // 
             // cbOnlyKnownDevice
             // 
             this.cbOnlyKnownDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbOnlyKnownDevice.AutoSize = true;
-            this.cbOnlyKnownDevice.Location = new System.Drawing.Point(700, 8);
+            this.cbOnlyKnownDevice.Location = new System.Drawing.Point(840, 8);
             this.cbOnlyKnownDevice.Name = "cbOnlyKnownDevice";
             this.cbOnlyKnownDevice.Size = new System.Drawing.Size(177, 17);
             this.cbOnlyKnownDevice.TabIndex = 4;
@@ -422,7 +423,7 @@
             // 
             this.cbStationContainsHTTP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbStationContainsHTTP.AutoSize = true;
-            this.cbStationContainsHTTP.Location = new System.Drawing.Point(883, 7);
+            this.cbStationContainsHTTP.Location = new System.Drawing.Point(1023, 7);
             this.cbStationContainsHTTP.Name = "cbStationContainsHTTP";
             this.cbStationContainsHTTP.Size = new System.Drawing.Size(152, 17);
             this.cbStationContainsHTTP.TabIndex = 3;
@@ -432,7 +433,7 @@
             // btnApplyStationFilter
             // 
             this.btnApplyStationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApplyStationFilter.Location = new System.Drawing.Point(1276, 4);
+            this.btnApplyStationFilter.Location = new System.Drawing.Point(1416, 4);
             this.btnApplyStationFilter.Name = "btnApplyStationFilter";
             this.btnApplyStationFilter.Size = new System.Drawing.Size(75, 23);
             this.btnApplyStationFilter.TabIndex = 2;
@@ -443,7 +444,7 @@
             // txtProbeFilter
             // 
             this.txtProbeFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtProbeFilter.Location = new System.Drawing.Point(1124, 6);
+            this.txtProbeFilter.Location = new System.Drawing.Point(1264, 6);
             this.txtProbeFilter.Name = "txtProbeFilter";
             this.txtProbeFilter.Size = new System.Drawing.Size(146, 20);
             this.txtProbeFilter.TabIndex = 1;
@@ -452,7 +453,7 @@
             // 
             this.cbProbeFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbProbeFilter.AutoSize = true;
-            this.cbProbeFilter.Location = new System.Drawing.Point(1041, 8);
+            this.cbProbeFilter.Location = new System.Drawing.Point(1181, 8);
             this.cbProbeFilter.Name = "cbProbeFilter";
             this.cbProbeFilter.Size = new System.Drawing.Size(79, 17);
             this.cbProbeFilter.TabIndex = 0;
@@ -473,12 +474,13 @@
             this.columnHeader13,
             this.columnHeader17,
             this.columnHeader16,
-            this.columnHeader24});
+            this.columnHeader24,
+            this.columnHeader25});
             this.StationList.FullRowSelect = true;
             this.StationList.GridLines = true;
             this.StationList.Location = new System.Drawing.Point(0, 30);
             this.StationList.Name = "StationList";
-            this.StationList.Size = new System.Drawing.Size(1356, 257);
+            this.StationList.Size = new System.Drawing.Size(1496, 257);
             this.StationList.TabIndex = 0;
             this.StationList.UseCompatibleStateImageBehavior = false;
             this.StationList.View = System.Windows.Forms.View.Details;
@@ -524,6 +526,11 @@
             this.columnHeader16.Text = "Last Seen";
             this.columnHeader16.Width = 120;
             // 
+            // columnHeader24
+            // 
+            this.columnHeader24.Text = "Local IP Addresses";
+            this.columnHeader24.Width = 140;
+            // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.tabPage4);
@@ -533,7 +540,7 @@
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(1356, 286);
+            this.tabControl2.Size = new System.Drawing.Size(1496, 286);
             this.tabControl2.TabIndex = 0;
             // 
             // tabPage4
@@ -541,7 +548,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(1348, 260);
+            this.tabPage4.Size = new System.Drawing.Size(1488, 260);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Information";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -552,7 +559,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1327, 260);
+            this.tabPage3.Size = new System.Drawing.Size(1348, 260);
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "Traffic";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -572,7 +579,7 @@
             this.StationTrafficList.GridLines = true;
             this.StationTrafficList.Location = new System.Drawing.Point(3, 3);
             this.StationTrafficList.Name = "StationTrafficList";
-            this.StationTrafficList.Size = new System.Drawing.Size(1321, 254);
+            this.StationTrafficList.Size = new System.Drawing.Size(1342, 254);
             this.StationTrafficList.TabIndex = 0;
             this.StationTrafficList.UseCompatibleStateImageBehavior = false;
             this.StationTrafficList.View = System.Windows.Forms.View.Details;
@@ -617,7 +624,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(1327, 260);
+            this.tabPage5.Size = new System.Drawing.Size(1348, 260);
             this.tabPage5.TabIndex = 2;
             this.tabPage5.Text = "HTTP Locations";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -632,7 +639,7 @@
             this.StationHttpLocList.GridLines = true;
             this.StationHttpLocList.Location = new System.Drawing.Point(3, 3);
             this.StationHttpLocList.Name = "StationHttpLocList";
-            this.StationHttpLocList.Size = new System.Drawing.Size(1321, 254);
+            this.StationHttpLocList.Size = new System.Drawing.Size(1342, 254);
             this.StationHttpLocList.TabIndex = 0;
             this.StationHttpLocList.UseCompatibleStateImageBehavior = false;
             this.StationHttpLocList.View = System.Windows.Forms.View.Details;
@@ -738,16 +745,16 @@
             this.columnHeader23.Text = "Is WPS Enabled";
             this.columnHeader23.Width = 120;
             // 
-            // columnHeader24
+            // columnHeader25
             // 
-            this.columnHeader24.Text = "Local IP Addresses";
-            this.columnHeader24.Width = 140;
+            this.columnHeader25.Text = "Has GPS Data";
+            this.columnHeader25.Width = 99;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1370, 636);
+            this.ClientSize = new System.Drawing.Size(1510, 636);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -860,6 +867,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader22;
         private System.Windows.Forms.ColumnHeader columnHeader23;
         private System.Windows.Forms.ColumnHeader columnHeader24;
+        private System.Windows.Forms.ColumnHeader columnHeader25;
     }
 }
 
