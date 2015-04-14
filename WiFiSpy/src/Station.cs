@@ -283,7 +283,7 @@ namespace WiFiSpy.src
 
         public bool HasGpsLocation(GpsLocation[] locations)
         {
-            for(int i = 0; i < _probes.Count; i++)
+            for (int i = 0; i < _probes.Count; i++)
             {
                 for (int j = 0; j < locations.Length; j++)
                 {
@@ -294,6 +294,40 @@ namespace WiFiSpy.src
                 }
             }
             return false;
+        }
+
+        public GpsLocation GetFirstGpsLocation(GpsLocation[] locations)
+        {
+            for (int i = 0; i < _probes.Count; i++)
+            {
+                for (int j = 0; j < locations.Length; j++)
+                {
+                    if (locations[j].IsNearby(_probes[i].TimeStamp))
+                    {
+                        return locations[j];
+                    }
+                }
+            }
+            return null;
+        }
+
+        public GpsLocation[] GetGpsLocations(GpsLocation[] locations)
+        {
+            List<GpsLocation> gpsLocs = new List<GpsLocation>();
+            for (int i = 0; i < _probes.Count; i++)
+            {
+                for (int j = 0; j < locations.Length; j++)
+                {
+                    if (locations[j].IsNearby(_probes[i].TimeStamp))
+                    {
+                        if (gpsLocs.FirstOrDefault(o => o.Time.Ticks == locations[j].Time.Ticks) == null)
+                        {
+                            gpsLocs.Add(locations[j]);
+                        }
+                    }
+                }
+            }
+            return gpsLocs.ToArray();
         }
     }
 }

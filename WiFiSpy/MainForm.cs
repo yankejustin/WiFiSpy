@@ -112,6 +112,7 @@ namespace WiFiSpy
         private void RefreshAll()
         {
             ReadCapFiles();
+            RefreshGpsLocations();
 
             FillHourlyChart();
             FillPieChart();
@@ -120,7 +121,6 @@ namespace WiFiSpy
             FillTrafficChart();
 
             FillStationList();
-            RefreshGpsLocations();
             FillExtenderList();
         }
 
@@ -147,6 +147,20 @@ namespace WiFiSpy
         {
             StationList.Items.Clear();
             Station[] stations = CapManager.GetStations(CapFiles.ToArray());
+
+            if (cbMacAddrFilter.Checked)
+            {
+                List<Station> TempStations = new List<Station>();
+
+                foreach (Station station in stations)
+                {
+                    if (station.SourceMacAddressStr.ToLower().Contains(txtMacAddrFilter.Text.ToLower()))
+                    {
+                        TempStations.Add(station);
+                    }
+                }
+                stations = TempStations.ToArray();
+            }
 
             if(cbProbeFilter.Checked)
             {
@@ -203,6 +217,7 @@ namespace WiFiSpy
             {
                 string IPs = "";
                 string[] IpAddresses = station.LocalIpAddresses;
+                GpsLocation location = station.GetFirstGpsLocation(GpsLocations.ToArray());
 
                 for (int i = 0; i < IpAddresses.Length; i++)
                 {
@@ -222,7 +237,9 @@ namespace WiFiSpy
                     station.DeviceTypeStr,
                     station.DeviceVersion,
                     station.LastSeenDate.ToString(DateTimeFormat),
-                    IPs
+                    IPs,
+                    location != null ? location.Longitude.ToString() : "",
+                    location != null ? location.Latitude.ToString() : "",
                 });
                 item.Tag = station;
                 //StationList.Items.Add(item);
@@ -524,6 +541,32 @@ namespace WiFiSpy
                         });
                         item.Tag = AP;
                         LvRepeaterList.Items.Add(item);
+                    }
+                }
+            }
+        }
+
+        private void followDeviceByGPSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (StationList.SelectedItems.Count > 0)
+            {
+                Station station = StationList.SelectedItems[0].Tag as Station;
+
+                if (station != null)
+                {
+                    if (station.HasGpsLocation(GpsLocations.ToArray()))
+                    {
+                        using (SaveFileDialog dialog = new SaveFileDialog())
+                        {
+                            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            {
+                                File.WriteAllText(dialog.FileName, GpsLocation.ToKML(station.GetGpsLocations(this.GpsLocations.ToArray())));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("No GPS Data is known for this station");
                     }
                 }
             }
