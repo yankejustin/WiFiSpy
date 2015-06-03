@@ -148,6 +148,20 @@ namespace WiFiSpy
             StationList.Items.Clear();
             Station[] stations = CapManager.GetStations(CapFiles.ToArray());
 
+            if (cbDeviceNameFilter.Checked)
+            {
+                List<Station> TempStations = new List<Station>();
+
+                foreach (Station station in stations)
+                {
+                    if (station.DeviceNames.Length > 0)
+                    {
+                        TempStations.Add(station);
+                    }
+                }
+                stations = TempStations.ToArray();
+            }
+
             if (cbMacAddrFilter.Checked)
             {
                 List<Station> TempStations = new List<Station>();
@@ -216,7 +230,9 @@ namespace WiFiSpy
             foreach(Station station in stations)
             {
                 string IPs = "";
+                string Names = "";
                 string[] IpAddresses = station.LocalIpAddresses;
+                string[] DeviceNames = station.DeviceNames;
                 GpsLocation location = station.GetFirstGpsLocation(GpsLocations.ToArray());
 
                 for (int i = 0; i < IpAddresses.Length; i++)
@@ -225,6 +241,14 @@ namespace WiFiSpy
 
                     if (i + 1 < IpAddresses.Length)
                         IPs += ", ";
+                }
+
+                for (int i = 0; i < DeviceNames.Length; i++)
+                {
+                    Names += DeviceNames[i];
+
+                    if (i + 1 < DeviceNames.Length)
+                        Names += ", ";
                 }
 
                 ListViewItem item = new ListViewItem(new string[]
@@ -240,6 +264,7 @@ namespace WiFiSpy
                     IPs,
                     location != null ? location.Longitude.ToString() : "",
                     location != null ? location.Latitude.ToString() : "",
+                    Names
                 });
                 item.Tag = station;
                 //StationList.Items.Add(item);

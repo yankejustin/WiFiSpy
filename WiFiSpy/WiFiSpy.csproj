@@ -78,6 +78,7 @@
     <Compile Include="src\OuiParser.cs" />
     <Compile Include="src\Packets\DataFrame.cs" />
     <Compile Include="src\Packets\BeaconFrame.cs" />
+    <Compile Include="src\Packets\DhcpInfo.cs" />
     <Compile Include="src\Packets\ProbePacket.cs" />
     <Compile Include="src\PcapHeader.cs" />
     <Compile Include="src\PcapUnmanagedStructures.cs" />

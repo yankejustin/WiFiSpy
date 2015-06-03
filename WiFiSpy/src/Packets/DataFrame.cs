@@ -80,6 +80,19 @@ namespace WiFiSpy.src.Packets
             }
         }
 
+        public DhcpInfo DHCP
+        {
+            get
+            {
+                byte[] _payload = Payload;
+                if (DhcpInfo.IsDhcpMessage(_payload))
+                {
+                    return new DhcpInfo(_payload);
+                }
+                return null;
+            }
+        }
+
         public DataFrame(PacketDotNet.Ieee80211.QosDataFrame DataFrame, DateTime TimeStamp)
         {
             this.Frame = DataFrame;

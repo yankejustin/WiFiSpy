@@ -77,6 +77,29 @@ namespace WiFiSpy.src
         }
 
         /// <summary>
+        /// Get all the device names this user had
+        /// </summary>
+        public string[] DeviceNames
+        {
+            get
+            {
+                List<string> Names = new List<string>();
+                foreach (DataFrame dataFrame in DataFrames)
+                {
+                    DhcpInfo dhcp = dataFrame.DHCP;
+                    if (dhcp != null)
+                    {
+                        if (!Names.Contains(dhcp.ClientHostName))
+                        {
+                            Names.Add(dhcp.ClientHostName);
+                        }
+                    }
+                }
+                return Names.ToArray();
+            }
+        }
+
+        /// <summary>
         /// The name of the Station that is captured from the DHCP traffic
         /// </summary>
         public string StationName { get; internal set; }

@@ -250,4 +250,14 @@ namespace WiFiSpy.src
         /// </summary>
         QosCFAckAndCFPoll = 0x2F
     };
+
+    public enum DhcpMessageType
+    {
+        NotYetImplemented = 0,
+        Discover = 53,
+        MaximumDHCP_Message_Size = 57,
+        Vendor_Class_Identifier = 60,
+        HostName = 12,
+        End = 255
+    };
 }

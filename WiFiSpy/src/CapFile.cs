@@ -159,9 +159,9 @@ namespace WiFiSpy.src
         {
             packetsProcessed++;
 
-            if (packetsProcessed == 3177)
+            if (packetsProcessed == 43989)
             {
-
+                
             }
 
             if (e.Packet.LinkLayerType == PacketDotNet.LinkLayers.Ieee80211)
@@ -174,8 +174,8 @@ namespace WiFiSpy.src
                 PacketDotNet.Ieee80211.DeauthenticationFrame DeAuthFrame = packet as PacketDotNet.Ieee80211.DeauthenticationFrame;
                 PacketDotNet.Ieee80211.AssociationRequestFrame AuthFrame2 = packet as PacketDotNet.Ieee80211.AssociationRequestFrame;
 
-
                 PacketDotNet.Ieee80211.DataDataFrame DataDataFrame = packet as PacketDotNet.Ieee80211.DataDataFrame;
+                
 
                 DateTime ArrivalDate = e.Packet.Timeval.Date;
 
