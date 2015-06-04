@@ -42,11 +42,6 @@ namespace WiFiSpy.src.Packets
             if (!IsDhcpMessage(Payload))
                 return;
 
-            if (Payload[4] == 0x23 && Payload[5] == 0xDE && Payload[6] == 0x48 && Payload[7] == 0x38)
-            {
-
-            }
-
             int SecondsElapsed_Offset = 8;
             int ClientIpAddress_Offset = 12;
             int YourIpAddress_Offset = 16;
@@ -63,19 +58,18 @@ namespace WiFiSpy.src.Packets
             NextServerIpAddress = Payload[NextServerIpAddress_Offset] + "." + Payload[NextServerIpAddress_Offset + 1] + "." + Payload[NextServerIpAddress_Offset + 2] + "." + Payload[NextServerIpAddress_Offset + 3];
             RelayAgentIpAddress = Payload[RelayAgentIpAddress_Offset] + "." + Payload[RelayAgentIpAddress_Offset + 1] + "." + Payload[RelayAgentIpAddress_Offset + 2] + "." + Payload[RelayAgentIpAddress_Offset + 3];
 
-            ClientMacAddress = Payload[ClientMacAddress_Offset + 0].ToString("X2") + ":" +
-                               Payload[ClientMacAddress_Offset + 1].ToString("X2") + ":" +
-                               Payload[ClientMacAddress_Offset + 2].ToString("X2") + ":" +
-                               Payload[ClientMacAddress_Offset + 3].ToString("X2") + ":" +
-                               Payload[ClientMacAddress_Offset + 4].ToString("X2") + ":" +
+            ClientMacAddress = Payload[ClientMacAddress_Offset + 0].ToString("X2") + "-" +
+                               Payload[ClientMacAddress_Offset + 1].ToString("X2") + "-" +
+                               Payload[ClientMacAddress_Offset + 2].ToString("X2") + "-" +
+                               Payload[ClientMacAddress_Offset + 3].ToString("X2") + "-" +
+                               Payload[ClientMacAddress_Offset + 4].ToString("X2") + "-" +
                                Payload[ClientMacAddress_Offset + 5].ToString("X2");
-            
+
             List<DhcpProperty> props = new List<DhcpProperty>();
                 
             while (Properties_Offset + 2 < Payload.Length)
             {
                 DhcpProperty property = new DhcpProperty(Payload, Properties_Offset);
-
 
                 props.Add(property);
                 Properties_Offset += property.TotalLength;
@@ -106,16 +100,23 @@ namespace WiFiSpy.src.Packets
 
             public int Length { get; private set; }
             public int TotalLength { get { return Length + 2; } } // +2 = Length Byte + MessageType Byte
-
             public byte[] PropertyData { get; private set; }
 
             public DhcpProperty(byte[] Payload, int Offset)
             {
-                this.MessageType = (DhcpMessageType)Payload[Offset];
-                this.Length = Payload[Offset + 1];
-
-                this.PropertyData = new byte[Length];
-                Array.Copy(Payload, Offset + 2, PropertyData, 0, Length);
+                this.MessageType = (DhcpMessageType)Payload[Offset++];
+                this.Length = Payload[Offset++];
+                
+                if (Offset + Length < Payload.Length)
+                {
+                    this.PropertyData = new byte[Length];
+                    Array.Copy(Payload, Offset, PropertyData, 0, Length);
+                }
+                else
+                {
+                    this.PropertyData = new byte[Payload.Length - Offset];
+                    Array.Copy(Payload, Offset, PropertyData, 0, PropertyData.Length);
+                }
             }
         }
     }
