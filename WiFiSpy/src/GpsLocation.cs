@@ -25,9 +25,6 @@ namespace WiFiSpy.src
 
         public bool IsNearby(DateTime TargetTime)
         {
-            if (Time == null)
-                return false;
-
             return Time.AddSeconds(-5) > TargetTime && TargetTime < Time.AddSeconds(5);
         }
 
