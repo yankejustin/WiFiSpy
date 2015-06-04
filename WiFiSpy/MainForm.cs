@@ -229,26 +229,26 @@ namespace WiFiSpy
             List<ListViewItem> ListItems = new List<ListViewItem>();
             foreach(Station station in stations)
             {
-                string IPs = "";
-                string Names = "";
+                StringBuilder IPs = new StringBuilder();
+                StringBuilder Names = new StringBuilder();
                 string[] IpAddresses = station.LocalIpAddresses;
                 string[] DeviceNames = station.DeviceNames;
                 GpsLocation location = station.GetFirstGpsLocation(GpsLocations.ToArray());
 
                 for (int i = 0; i < IpAddresses.Length; i++)
                 {
-                    IPs += IpAddresses[i];
+                    IPs.Append(IpAddresses[i]);
 
                     if (i + 1 < IpAddresses.Length)
-                        IPs += ", ";
+                        IPs.Append(", ");
                 }
 
                 for (int i = 0; i < DeviceNames.Length; i++)
                 {
-                    Names += DeviceNames[i];
+                    Names.Append(DeviceNames[i]);
 
                     if (i + 1 < DeviceNames.Length)
-                        Names += ", ";
+                        Names.Append(", ");
                 }
 
                 ListViewItem item = new ListViewItem(new string[]
@@ -261,10 +261,10 @@ namespace WiFiSpy
                     station.DeviceTypeStr,
                     station.DeviceVersion,
                     station.LastSeenDate.ToString(DateTimeFormat),
-                    IPs,
+                    IPs.ToString(),
                     location != null ? location.Longitude.ToString() : "",
                     location != null ? location.Latitude.ToString() : "",
-                    Names
+                    Names.ToString()
                 });
                 item.Tag = station;
                 //StationList.Items.Add(item);
