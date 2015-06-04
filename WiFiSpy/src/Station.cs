@@ -228,17 +228,17 @@ namespace WiFiSpy.src
             get
             {
                 List<string> TempProbeNames = new List<string>();
-                string ProbeNames = "";
+                StringBuilder ProbeNames = new StringBuilder();
 
                 foreach(ProbePacket probe in Probes)
                 {
                     if (!String.IsNullOrEmpty(probe.SSID) && !TempProbeNames.Contains(probe.SSID))
                     {
-                        ProbeNames += probe.SSID + ",   ";
+                        ProbeNames.Append(probe.SSID + ",   ");
                         TempProbeNames.Add(probe.SSID);
                     }
                 }
-                return ProbeNames;
+                return ProbeNames.ToString();
             }
         }
 
