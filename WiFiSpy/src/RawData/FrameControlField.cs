@@ -23,14 +23,14 @@ namespace WiFiSpy.src.RawData
         public FrameControlField(ushort value)
         {
             this.ProtocolVersion = (byte)((value >> 0x8) & 0x3);
-            this.ToDS = ((value & 0x1) == 1) ? true : false;
-            this.FromDS = (((value >> 1) & 0x1) == 1) ? true : false;
-            this.MoreFragment = (((value >> 2) & 0x1) == 1) ? true : false;
-            this.ReTry = (((value >> 3) & 0x1) == 1) ? true : false;
-            this.PowerManagement = (((value >> 4) & 0x1) == 1) ? true : false;
-            this.MoreData = (((value >> 5) & 0x1) == 1) ? true : false;
-            this.IsWep = (((value >> 6) & 0x1) == 1) ? true : false;
-            this.Order = (((value >> 0x7) & 0x1) == 1) ? true : false;
+            this.ToDS = ((value & 0x1) == 1);
+            this.FromDS = (((value >> 1) & 0x1) == 1);
+            this.MoreFragment = (((value >> 2) & 0x1) == 1);
+            this.ReTry = (((value >> 3) & 0x1) == 1);
+            this.PowerManagement = (((value >> 4) & 0x1) == 1);
+            this.MoreData = (((value >> 5) & 0x1) == 1);
+            this.IsWep = (((value >> 6) & 0x1) == 1);
+            this.Order = (((value >> 0x7) & 0x1) == 1);
 
             this.Type = (FrameTypes)(((value >> 8) & 0xC) >> 2);
             this.SubType = (FrameSubTypes)((((value >> 8) & 0x0C) << 2) | ((value >> 8) >> 4));
