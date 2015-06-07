@@ -23,8 +23,6 @@ namespace WiFiSpy.src
         public delegate void ReadDataFrameCallback(DataFrame dataFrame);
         public event ReadDataFrameCallback onReadDataFrame;
 
-
-
         private List<BeaconFrame> _beacons;
         private SortedList<long, AccessPoint> _accessPoints;
         private SortedList<string, AccessPoint[]> _APExtenders;
@@ -99,17 +97,20 @@ namespace WiFiSpy.src
 
         public CapFile()
         {
-            
+            _beacons = new List<BeaconFrame>();
+            _accessPoints = new SortedList<long, AccessPoint>();
+            _stations = new SortedList<long, Station>();
+            _dataFrames = new List<DataFrame>();
         }
 
         public void ReadCap(string FilePath)
         {
-            /**/
             ICaptureDevice device = null;
 
             try
             {
                 // Get an offline device
+
                 device = new CaptureFileReaderDevice(FilePath);
 
                 // Open the device
@@ -119,15 +120,10 @@ namespace WiFiSpy.src
             {
                 return;
             }
-
-            _beacons = new List<BeaconFrame>();
-            _accessPoints = new SortedList<long, AccessPoint>();
-            _stations = new SortedList<long, Station>();
-            _dataFrames = new List<DataFrame>();
-
+            
             device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
             device.Capture();
-            device.Close();
+            //device.Close();
 
             //CapFileReader reader = new CapFileReader();
             //reader.ReadCapFile(FilePath);
@@ -167,68 +163,72 @@ namespace WiFiSpy.src
             if (e.Packet.LinkLayerType == PacketDotNet.LinkLayers.Ieee80211)
             {
                 Packet packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
-                PacketDotNet.Ieee80211.BeaconFrame beacon = packet as PacketDotNet.Ieee80211.BeaconFrame;
-                PacketDotNet.Ieee80211.ProbeRequestFrame probeRequest = packet as PacketDotNet.Ieee80211.ProbeRequestFrame;
-                PacketDotNet.Ieee80211.QosDataFrame DataFrame = packet as PacketDotNet.Ieee80211.QosDataFrame;
 
-                PacketDotNet.Ieee80211.DeauthenticationFrame DeAuthFrame = packet as PacketDotNet.Ieee80211.DeauthenticationFrame;
-                PacketDotNet.Ieee80211.AssociationRequestFrame AuthFrame2 = packet as PacketDotNet.Ieee80211.AssociationRequestFrame;
+                if (packet != null)
+                    ProcessPacket(packet, e.Packet.Timeval.Date);
+            }
+        }
 
-                PacketDotNet.Ieee80211.DataDataFrame DataDataFrame = packet as PacketDotNet.Ieee80211.DataDataFrame;
-                
+        public void ProcessPacket(Packet packet, DateTime ArrivalDate)
+        {
+            PacketDotNet.Ieee80211.BeaconFrame beacon = packet as PacketDotNet.Ieee80211.BeaconFrame;
+            PacketDotNet.Ieee80211.ProbeRequestFrame probeRequest = packet as PacketDotNet.Ieee80211.ProbeRequestFrame;
+            PacketDotNet.Ieee80211.QosDataFrame DataFrame = packet as PacketDotNet.Ieee80211.QosDataFrame;
 
-                DateTime ArrivalDate = e.Packet.Timeval.Date;
+            PacketDotNet.Ieee80211.DeauthenticationFrame DeAuthFrame = packet as PacketDotNet.Ieee80211.DeauthenticationFrame;
+            PacketDotNet.Ieee80211.AssociationRequestFrame AuthFrame2 = packet as PacketDotNet.Ieee80211.AssociationRequestFrame;
 
-                if (beacon != null)
+            PacketDotNet.Ieee80211.DataDataFrame DataDataFrame = packet as PacketDotNet.Ieee80211.DataDataFrame;
+
+            if (beacon != null)
+            {
+                BeaconFrame beaconFrame = new BeaconFrame(beacon, ArrivalDate);
+                _beacons.Add(beaconFrame);
+
+                long MacAddrNumber = MacToLong(beaconFrame.MacAddress);
+
+                //check for APs with this Mac Address
+                AccessPoint AP = null;
+
+                if (!_accessPoints.TryGetValue(MacAddrNumber, out AP))
                 {
-                    BeaconFrame beaconFrame = new BeaconFrame(beacon, ArrivalDate);
-                    _beacons.Add(beaconFrame);
-
-                    long MacAddrNumber = MacToLong(beaconFrame.MacAddress);
-
-                    //check for APs with this Mac Address
-                    AccessPoint AP = null;
-
-                    if (!_accessPoints.TryGetValue(MacAddrNumber, out AP))
-                    {
-                        AP = new AccessPoint(beaconFrame);
-                        _accessPoints.Add(MacAddrNumber, AP);
-                    }
-                    AP.AddBeaconFrame(beaconFrame);
-
-                    if (onReadAccessPoint != null)
-                        onReadAccessPoint(AP);
+                    AP = new AccessPoint(beaconFrame);
+                    _accessPoints.Add(MacAddrNumber, AP);
                 }
-                else if (probeRequest != null)
+                AP.AddBeaconFrame(beaconFrame);
+
+                if (onReadAccessPoint != null)
+                    onReadAccessPoint(AP);
+            }
+            else if (probeRequest != null)
+            {
+                ProbePacket probe = new ProbePacket(probeRequest, ArrivalDate);
+                Station station = null;
+
+                long MacAddrNumber = MacToLong(probe.SourceMacAddress);
+
+                if (!_stations.TryGetValue(MacAddrNumber, out station))
                 {
-                    ProbePacket probe = new ProbePacket(probeRequest, ArrivalDate);
-                    Station station = null;
-
-                    long MacAddrNumber = MacToLong(probe.SourceMacAddress);
-
-                    if (!_stations.TryGetValue(MacAddrNumber, out station))
-                    {
-                        station = new Station(probe);
-                        _stations.Add(MacAddrNumber, station);
-                    }
-
-                    station.AddProbe(probe);
-
-                    if (onReadStation != null)
-                        onReadStation(station);
+                    station = new Station(probe);
+                    _stations.Add(MacAddrNumber, station);
                 }
-                else if (DataFrame != null)
+
+                station.AddProbe(probe);
+
+                if (onReadStation != null)
+                    onReadStation(station);
+            }
+            else if (DataFrame != null)
+            {
+                DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
+
+                //invalid packets are useless, probably encrypted
+                if (_dataFrame.IsValidPacket)
                 {
-                    DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
+                    _dataFrames.Add(_dataFrame);
 
-                    //invalid packets are useless, probably encrypted
-                    if (_dataFrame.IsValidPacket)
-                    {
-                        _dataFrames.Add(_dataFrame);
-
-                        if (onReadDataFrame != null)
-                            onReadDataFrame(_dataFrame);
-                    }
+                    if (onReadDataFrame != null)
+                        onReadDataFrame(_dataFrame);
                 }
             }
         }

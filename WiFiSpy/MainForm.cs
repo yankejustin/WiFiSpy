@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WiFiSpy.src;
@@ -18,9 +19,13 @@ namespace WiFiSpy
 {
     public partial class MainForm : Form
     {
+        private delegate void Invoky();
         public List<CapFile> CapFiles { get; private set; }
         public List<GpsLocation> GpsLocations { get; private set; }
         public const string DateTimeFormat = "dd-MM-yyyy HH:mm:ss";
+
+        public AirservClient AirservClient { get; private set; }
+        public CapFile LiveCaptureFile { get; private set; }
 
         public MainForm()
         {
@@ -111,7 +116,11 @@ namespace WiFiSpy
 
         private void RefreshAll()
         {
-            ReadCapFiles();
+            if (this.AirservClient == null)
+            {
+                ReadCapFiles();
+            }
+
             RefreshGpsLocations();
 
             FillHourlyChart();
@@ -595,6 +604,37 @@ namespace WiFiSpy
                     }
                 }
             }
+        }
+
+        private void liveModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!liveModeToolStripMenuItem.Checked)
+            {
+                if (AirservClient != null)
+                {
+                    AirservClient.Disconnect();
+                }
+
+                AirServSettingsForm sessingsForm = new AirServSettingsForm();
+
+                if (sessingsForm.ShowDialog() == DialogResult.OK)
+                {
+                    this.AirservClient = sessingsForm.client;
+                    this.LiveCaptureFile = new CapFile();
+
+                    this.CapFiles.Add(LiveCaptureFile);
+
+                    this.AirservClient.onPacketArrival += AirservClient_onPacketArrival;
+
+                    liveModeToolStripMenuItem.Checked = true;
+                }
+            }
+        }
+
+        private void AirservClient_onPacketArrival(PacketDotNet.Packet packet, DateTime ArrivalTime)
+        {
+            this.LiveCaptureFile.ProcessPacket(packet, ArrivalTime);
+            this.Invoke(new Invoky(() => RefreshAll()));
         }
     }
 }

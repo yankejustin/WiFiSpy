@@ -251,13 +251,32 @@ namespace WiFiSpy.src
         QosCFAckAndCFPoll = 0x2F
     };
 
-    public enum DhcpMessageType
+    public enum DhcpPropertyType
     {
         NotYetImplemented = 0,
-        Discover = 53,
-        MaximumDHCP_Message_Size = 57,
-        Vendor_Class_Identifier = 60,
+        SubnetMask = 1,
+        Router = 3,
+        DomainNameServer = 6, //DNS
         HostName = 12,
+        RequestIpAddress = 50,
+        IpAddressLeaseTime = 51,
+        MessageType = 53,
+        ServerIdentifier = 54,
+        MaximumDHCP_Message_Size = 57,
+        RenewalTimeValue = 58,
+        RebindingTimeValue = 59,
+        Vendor_Class_Identifier = 60,
+        ClientIdentifier = 61,
         End = 255
+    };
+
+    public enum DhcpMessageType
+    {
+        Unknown = 0,
+        Discover = 1,
+        Offer = 2,
+        Request = 3,
+        ACK = 5,
+        NAK = 6,
     };
 }
