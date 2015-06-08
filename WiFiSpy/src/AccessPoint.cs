@@ -62,8 +62,6 @@ namespace WiFiSpy.src
             this.BeaconFrames.Add(beaconFrame);
         }
 
-
-
         public override string ToString()
         {
             return "[" + MacAddress + "] " + SSID;
