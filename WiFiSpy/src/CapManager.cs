@@ -43,9 +43,9 @@ namespace WiFiSpy.src
                             }
 
                             //copy the data frames from other cap files
-                            foreach(DataFrame frame in station.DataFrames)
+                            foreach (DataFrame frame in station.DataFrames)
                             {
-                                if(_station.DataFrames.FirstOrDefault(o => o.TimeStamp.Ticks == frame.TimeStamp.Ticks) == null)
+                                if (_station.DataFrames.FirstOrDefault(o => o.TimeStamp.Ticks == frame.TimeStamp.Ticks) == null)
                                 {
                                     _station.AddDataFrame(frame);
                                 }
@@ -58,7 +58,7 @@ namespace WiFiSpy.src
             return StationMacs.Values.ToArray();
         }
 
-        
+
         /// <summary>
         /// Grab all the Access Points with the same name in the hope these are all extenders
         /// </summary>
@@ -72,7 +72,7 @@ namespace WiFiSpy.src
             {
                 SortedList<string, AccessPoint[]> PossibleExtenders = capFile.PossibleExtenders;
 
-                for(int i = 0; i < PossibleExtenders.Count; i++)
+                for (int i = 0; i < PossibleExtenders.Count; i++)
                 {
                     if (AccessPoints.ContainsKey(PossibleExtenders.Keys[i]))
                     {
@@ -93,6 +93,50 @@ namespace WiFiSpy.src
             }
 
             return AccessPoints;
+        }
+
+        /// <summary>
+        /// Grab all the Access Points with the same name in the hope these are all extenders
+        /// </summary>
+        /// <param name="CapFiles"></param>
+        /// <returns></returns>
+        public static AccessPoint[] GetAllAccessPoints(CapFile[] CapFiles)
+        {
+            SortedList<string, AccessPoint> AccessPoints = new SortedList<string, AccessPoint>();
+
+            foreach (CapFile capFile in CapFiles)
+            {
+                foreach (AccessPoint AP in capFile.AccessPoints)
+                {
+                    if (!AccessPoints.ContainsKey(AP.MacAddress))
+                    {
+                        AccessPoints.Add(AP.MacAddress, AP);
+                    }
+                }
+            }
+
+            return AccessPoints.Values.ToArray();
+        }
+
+        public static Station[] GetStationsFromAP(AccessPoint TargetAP, CapFile[] CapFiles)
+        {
+            Station[] Stations = GetStations(CapFiles);
+            List<Station> TargetStations = new List<Station>();
+
+            foreach (Station station in Stations)
+            {
+                foreach (DataFrame frame in station.DataFrames)
+                {
+                    if (frame.TargetMacAddressStr == TargetAP.MacAddress)
+                    {
+                        TargetStations.Add(station);
+                        break;
+                    }
+                }
+            }
+
+            return TargetStations.ToArray();
+
         }
     }
 }

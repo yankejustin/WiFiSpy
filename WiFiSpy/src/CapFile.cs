@@ -223,12 +223,25 @@ namespace WiFiSpy.src
                 DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
 
                 //invalid packets are useless, probably encrypted
-                if (_dataFrame.IsValidPacket)
+                //if (_dataFrame.IsValidPacket)
                 {
                     _dataFrames.Add(_dataFrame);
 
                     if (onReadDataFrame != null)
                         onReadDataFrame(_dataFrame);
+                }
+            }
+
+            //link all the DataFrames to the Stations
+            foreach (Station station in _stations.Values)
+            {
+                long MacSourceAddrNumber = MacToLong(station.SourceMacAddress);
+                station.ClearDataFrames();
+
+                foreach (DataFrame frame in _dataFrames.Where(o => o.MacSourceAddressLong == MacSourceAddrNumber ||
+                                                                   o.MacTargetAddressLong == MacSourceAddrNumber))
+                {
+                    station.AddDataFrame(frame);
                 }
             }
         }

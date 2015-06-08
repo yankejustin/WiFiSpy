@@ -20,19 +20,21 @@ namespace WiFiSpy
     public partial class MainForm : Form
     {
         private delegate void Invoky();
-        public List<CapFile> CapFiles { get; private set; }
-        public List<GpsLocation> GpsLocations { get; private set; }
+        public static List<CapFile> CapFiles { get; private set; }
+        public static List<GpsLocation> GpsLocations { get; private set; }
         public const string DateTimeFormat = "dd-MM-yyyy HH:mm:ss";
 
         public AirservClient AirservClient { get; private set; }
         public CapFile LiveCaptureFile { get; private set; }
 
+
         public MainForm()
         {
             InitializeComponent();
             OuiParser.Initialize("./Data/OUI.txt");
-            this.CapFiles = new List<CapFile>();
-            this.GpsLocations = new List<GpsLocation>();
+
+            CapFiles = new List<CapFile>();
+            GpsLocations = new List<GpsLocation>();
 
             RefreshAll();
         }
@@ -129,8 +131,49 @@ namespace WiFiSpy
 
             FillTrafficChart();
 
-            FillStationList();
+            stationListControl1.FillStationList(CapManager.GetStations(MainForm.CapFiles.ToArray()));
             FillExtenderList();
+
+            FillApTree();
+        }
+
+        private void FillApTree()
+        {
+            foreach (AccessPoint AP in CapManager.GetAllAccessPoints(CapFiles.ToArray()))
+            {
+                Station[] Stations = CapManager.GetStationsFromAP(AP, CapFiles.ToArray());
+
+                if (Stations.Length > 0)
+                {
+
+                }
+
+                TreeNode[] FoundNodes = new TreeNode[0];
+                if ((FoundNodes = APTree.Nodes.Find(AP.MacAddress, false)).Length > 0)
+                {
+                    TreeNode _foundNode = FoundNodes[0];
+
+                    foreach (Station station in Stations)
+                    {
+                        if (_foundNode.Nodes.Find(station.SourceMacAddressStr, true).Length == 0)
+                        {
+                            TreeNode StationNode = _foundNode.Nodes.Add(station.SourceMacAddressStr, station.Manufacturer);
+                            StationNode.Tag = station;
+                        }
+                    }
+
+                    continue;
+                }
+
+                TreeNode node = APTree.Nodes.Add(AP.MacAddress, AP.SSID);
+                node.Tag = AP;
+
+                foreach (Station station in Stations)
+                {
+                    TreeNode StationNode = node.Nodes.Add(station.SourceMacAddressStr, station.Manufacturer);
+                    StationNode.Tag = station;
+                }
+            }
         }
 
         private void FillExtenderList()
@@ -152,135 +195,7 @@ namespace WiFiSpy
             }
         }
 
-        private void FillStationList()
-        {
-            StationList.Items.Clear();
-            Station[] stations = CapManager.GetStations(CapFiles.ToArray());
-
-            if (cbDeviceNameFilter.Checked)
-            {
-                List<Station> TempStations = new List<Station>();
-
-                foreach (Station station in stations)
-                {
-                    if (station.DeviceNames.Length > 0)
-                    {
-                        TempStations.Add(station);
-                    }
-                }
-                stations = TempStations.ToArray();
-            }
-
-            if (cbMacAddrFilter.Checked)
-            {
-                List<Station> TempStations = new List<Station>();
-
-                foreach (Station station in stations)
-                {
-                    if (station.SourceMacAddressStr.ToLower().Contains(txtMacAddrFilter.Text.ToLower()))
-                    {
-                        TempStations.Add(station);
-                    }
-                }
-                stations = TempStations.ToArray();
-            }
-
-            if(cbProbeFilter.Checked)
-            {
-                List<Station> TempStations = new List<Station>();
-
-                foreach(Station station in stations)
-                {
-                    foreach(ProbePacket probe in station.Probes)
-                    {
-                        if (!String.IsNullOrEmpty(probe.SSID) && probe.SSID.ToLower().Contains(txtProbeFilter.Text.ToLower()))
-                        {
-                            TempStations.Add(station);
-                            break;
-                        }
-                    }
-                }
-                stations = TempStations.ToArray();
-            }
-
-            if(cbOnlyKnownDevice.Checked)
-            {
-                List<Station> TempStations = new List<Station>();
-
-                foreach (Station station in stations)
-                {
-                    if(station.DeviceTypeStr.Length > 0)
-                    {
-                        TempStations.Add(station);
-                    }
-                }
-                stations = TempStations.ToArray();
-            }
-
-            if(cbStationContainsHTTP.Checked)
-            {
-                List<Station> TempStations = new List<Station>();
-
-                foreach (Station station in stations)
-                {
-                    foreach(WiFiSpy.src.Packets.DataFrame frame in station.DataFrames)
-                    {
-                        if((frame.isIPv4 && (frame.isTCP || frame.isUDP)) && frame.PortDest == 80 || frame.PortSource == 80)
-                        {
-                            TempStations.Add(station);
-                            break;
-                        }
-                    }
-                }
-                stations = TempStations.ToArray();
-            }
-
-            List<ListViewItem> ListItems = new List<ListViewItem>();
-            foreach(Station station in stations)
-            {
-                string IPs = "";
-                string Names = "";
-                string[] IpAddresses = station.LocalIpAddresses;
-                string[] DeviceNames = station.DeviceNames;
-                GpsLocation location = station.GetFirstGpsLocation(GpsLocations.ToArray());
-
-                for (int i = 0; i < IpAddresses.Length; i++)
-                {
-                    IPs += IpAddresses[i];
-
-                    if (i + 1 < IpAddresses.Length)
-                        IPs += ", ";
-                }
-
-                for (int i = 0; i < DeviceNames.Length; i++)
-                {
-                    Names += DeviceNames[i];
-
-                    if (i + 1 < DeviceNames.Length)
-                        Names += ", ";
-                }
-
-                ListViewItem item = new ListViewItem(new string[]
-                {
-                    station.SourceMacAddressStr,
-                    station.Manufacturer,
-                    station.Probes.Length.ToString(),
-                    station.DataFrames.Length.ToString(),
-                    station.ProbeNames,
-                    station.DeviceTypeStr,
-                    station.DeviceVersion,
-                    station.LastSeenDate.ToString(DateTimeFormat),
-                    IPs,
-                    location != null ? location.Longitude.ToString() : "",
-                    location != null ? location.Latitude.ToString() : "",
-                    Names
-                });
-                item.Tag = station;
-                //StationList.Items.Add(item);
-                ListItems.Add(item);
-            }
-            StationList.Items.AddRange(ListItems.OrderByDescending(o => (o.Tag as Station).LastSeenDate).ToArray());
-        }
+        
 
         private void FillHourlyChart()
         {
@@ -507,53 +422,6 @@ namespace WiFiSpy
             TrafficPieChart.Series.Add(APSerie_Pie);
         }
 
-        private void btnApplyStationFilter_Click(object sender, EventArgs e)
-        {
-            FillStationList();
-        }
-
-        private void StationList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(StationList.SelectedItems.Count > 0)
-            {
-                Station station = StationList.SelectedItems[0].Tag as Station;
-
-                if(station != null)
-                {
-                    StationTrafficList.Items.Clear();
-                    StationHttpLocList.Items.Clear();
-
-                    foreach (WiFiSpy.src.Packets.DataFrame frame in station.DataFrames)
-                    {
-                        ListViewItem item = new ListViewItem(new string[]
-                        {
-                            frame.TimeStamp.ToString(DateTimeFormat),
-                            frame.SourceIp,
-                            frame.PortSource.ToString(),
-                            frame.DestIp,
-                            frame.PortDest.ToString(),
-                            frame.Payload.Length.ToString(),
-                            ASCIIEncoding.ASCII.GetString(frame.Payload)
-                        });
-                        item.Tag = frame;
-                        StationTrafficList.Items.Add(item);
-
-                        string HttpLocation = "";
-                        if((HttpLocation = frame.GetHttpLocation()).Length > 0)
-                        {
-                            ListViewItem HttpItem = new ListViewItem(new string[]
-                            {
-                                frame.TimeStamp.ToString(DateTimeFormat),
-                                HttpLocation
-                            });
-                            HttpItem.Tag = frame;
-                            StationHttpLocList.Items.Add(HttpItem);
-                        }
-                    }
-                }
-            }
-        }
-
         private void LvRepeaterNames_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (LvRepeaterNames.SelectedItems.Count > 0)
@@ -582,28 +450,7 @@ namespace WiFiSpy
 
         private void followDeviceByGPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (StationList.SelectedItems.Count > 0)
-            {
-                Station station = StationList.SelectedItems[0].Tag as Station;
-
-                if (station != null)
-                {
-                    if (station.HasGpsLocation(GpsLocations.ToArray()))
-                    {
-                        using (SaveFileDialog dialog = new SaveFileDialog())
-                        {
-                            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                            {
-                                File.WriteAllText(dialog.FileName, GpsLocation.ToKML(station.GetGpsLocations(this.GpsLocations.ToArray())));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("No GPS Data is known for this station");
-                    }
-                }
-            }
+            
         }
 
         private void liveModeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -622,7 +469,7 @@ namespace WiFiSpy
                     this.AirservClient = sessingsForm.client;
                     this.LiveCaptureFile = new CapFile();
 
-                    this.CapFiles.Add(LiveCaptureFile);
+                    MainForm.CapFiles.Add(LiveCaptureFile);
 
                     this.AirservClient.onPacketArrival += AirservClient_onPacketArrival;
 
@@ -635,6 +482,11 @@ namespace WiFiSpy
         {
             this.LiveCaptureFile.ProcessPacket(packet, ArrivalTime);
             this.Invoke(new Invoky(() => RefreshAll()));
+        }
+
+        private void APTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            
         }
     }
 }

@@ -266,6 +266,14 @@ namespace WiFiSpy.src
             }
         }
 
+        internal void ClearDataFrames()
+        {
+            lock (_payloadTraffic)
+            {
+                this._payloadTraffic.Clear();
+            }
+        }
+
         private string GetDeviceUserAgent(string contains)
         {
             foreach (DataFrame frame in DataFrames)

@@ -54,6 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\StationListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\StationListControl.Designer.cs">
+      <DependentUpon>StationListControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +99,9 @@
     <Compile Include="src\RawData\FrameControlField.cs" />
     <Compile Include="src\Station.cs" />
     <Compile Include="src\UnixTime.cs" />
+    <EmbeddedResource Include="Controls\StationListControl.resx">
+      <DependentUpon>StationListControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoadingForm.resx">
       <DependentUpon>LoadingForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -135,9 +144,7 @@
     </Content>
     <Content Include="spy-128.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\SharpPcap\SharpPcap.csproj">
       <Project>{24262e52-1304-4a25-8f73-a3b06e40592e}</Project>

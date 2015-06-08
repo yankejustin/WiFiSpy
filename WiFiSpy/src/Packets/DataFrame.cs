@@ -45,8 +45,8 @@ namespace WiFiSpy.src.Packets
             }
         }
 
-        public long MacSourceAddressLong { get; private set; }
-        public long MacTargetAddressLong { get; private set; }
+        public long SourceMacAddressLong { get; private set; }
+        public long TargetMacAddressLong { get; private set; }
 
         public bool isIPv4 { get; private set; }
         public bool isTCP { get; private set; }
@@ -98,8 +98,8 @@ namespace WiFiSpy.src.Packets
             this.Frame = DataFrame;
             this.TimeStamp = TimeStamp;
 
-            this.MacSourceAddressLong = CapFile.MacToLong(SourceMacAddress);
-            this.MacTargetAddressLong = CapFile.MacToLong(TargetMacAddress);
+            this.SourceMacAddressLong = CapFile.MacToLong(SourceMacAddress);
+            this.TargetMacAddressLong = CapFile.MacToLong(TargetMacAddress);
 
             //a hacky "parser" to get to the actual payload to get what we need
             int ReadOffset = 0;
