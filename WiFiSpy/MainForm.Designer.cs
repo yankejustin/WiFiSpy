@@ -60,6 +60,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.TrafficPieChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.stationListControl1 = new WiFiSpy.Controls.StationListControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.LvRepeaterNames = new System.Windows.Forms.ListView();
@@ -75,9 +76,8 @@
             this.APTree = new System.Windows.Forms.TreeView();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
-            this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.stationListControl1 = new WiFiSpy.Controls.StationListControl();
             this.ApStationList = new WiFiSpy.Controls.StationListControl();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -123,7 +123,7 @@
             this.liveModeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1699, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1428, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -167,7 +167,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1699, 669);
+            this.tabControl1.Size = new System.Drawing.Size(1428, 669);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -176,7 +176,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1691, 643);
+            this.tabPage1.Size = new System.Drawing.Size(1420, 643);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Overal View";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -195,7 +195,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1685, 637);
+            this.splitContainer1.Size = new System.Drawing.Size(1414, 637);
             this.splitContainer1.SplitterDistance = 313;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -212,8 +212,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
-            this.splitContainer3.Size = new System.Drawing.Size(1685, 313);
-            this.splitContainer3.SplitterDistance = 1038;
+            this.splitContainer3.Size = new System.Drawing.Size(1414, 313);
+            this.splitContainer3.SplitterDistance = 871;
             this.splitContainer3.TabIndex = 0;
             // 
             // groupBox2
@@ -222,7 +222,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1038, 313);
+            this.groupBox2.Size = new System.Drawing.Size(871, 313);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Hourly Overview";
@@ -241,7 +241,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.AllHourlyChart.Series.Add(series1);
-            this.AllHourlyChart.Size = new System.Drawing.Size(1032, 294);
+            this.AllHourlyChart.Size = new System.Drawing.Size(865, 294);
             this.AllHourlyChart.TabIndex = 0;
             this.AllHourlyChart.Text = "chart1";
             // 
@@ -251,7 +251,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(643, 313);
+            this.groupBox3.Size = new System.Drawing.Size(539, 313);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "AccessPoint Overview";
@@ -270,7 +270,7 @@
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             this.APInfoPieChart.Series.Add(series2);
-            this.APInfoPieChart.Size = new System.Drawing.Size(637, 294);
+            this.APInfoPieChart.Size = new System.Drawing.Size(533, 294);
             this.APInfoPieChart.TabIndex = 1;
             this.APInfoPieChart.Text = "chart2";
             // 
@@ -287,8 +287,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.groupBox4);
-            this.splitContainer2.Size = new System.Drawing.Size(1685, 320);
-            this.splitContainer2.SplitterDistance = 1039;
+            this.splitContainer2.Size = new System.Drawing.Size(1414, 320);
+            this.splitContainer2.SplitterDistance = 871;
             this.splitContainer2.TabIndex = 0;
             // 
             // StationWeekOverviewBox
@@ -297,7 +297,7 @@
             this.StationWeekOverviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StationWeekOverviewBox.Location = new System.Drawing.Point(0, 0);
             this.StationWeekOverviewBox.Name = "StationWeekOverviewBox";
-            this.StationWeekOverviewBox.Size = new System.Drawing.Size(1039, 320);
+            this.StationWeekOverviewBox.Size = new System.Drawing.Size(871, 320);
             this.StationWeekOverviewBox.TabIndex = 1;
             this.StationWeekOverviewBox.TabStop = false;
             this.StationWeekOverviewBox.Text = "Stations week overview";
@@ -316,7 +316,7 @@
             series3.Legend = "Legend1";
             series3.Name = "Series1";
             this.WeekStationOverviewChart.Series.Add(series3);
-            this.WeekStationOverviewChart.Size = new System.Drawing.Size(1033, 301);
+            this.WeekStationOverviewChart.Size = new System.Drawing.Size(865, 301);
             this.WeekStationOverviewChart.TabIndex = 1;
             this.WeekStationOverviewChart.Text = "chart4";
             // 
@@ -326,7 +326,7 @@
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(0, 0);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(642, 320);
+            this.groupBox4.Size = new System.Drawing.Size(539, 320);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Traffic Overview";
@@ -345,7 +345,7 @@
             series4.Legend = "Legend1";
             series4.Name = "Series1";
             this.TrafficPieChart.Series.Add(series4);
-            this.TrafficPieChart.Size = new System.Drawing.Size(636, 301);
+            this.TrafficPieChart.Size = new System.Drawing.Size(533, 301);
             this.TrafficPieChart.TabIndex = 1;
             this.TrafficPieChart.Text = "chart3";
             // 
@@ -359,6 +359,14 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Stations";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // stationListControl1
+            // 
+            this.stationListControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stationListControl1.Location = new System.Drawing.Point(3, 3);
+            this.stationListControl1.Name = "stationListControl1";
+            this.stationListControl1.Size = new System.Drawing.Size(1685, 637);
+            this.stationListControl1.TabIndex = 0;
             // 
             // tabPage6
             // 
@@ -510,6 +518,14 @@
             this.tabPage8.Text = "Stations";
             this.tabPage8.UseVisualStyleBackColor = true;
             // 
+            // ApStationList
+            // 
+            this.ApStationList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ApStationList.Location = new System.Drawing.Point(3, 3);
+            this.ApStationList.Name = "ApStationList";
+            this.ApStationList.Size = new System.Drawing.Size(1425, 605);
+            this.ApStationList.TabIndex = 0;
+            // 
             // tabPage9
             // 
             this.tabPage9.Location = new System.Drawing.Point(4, 22);
@@ -520,27 +536,11 @@
             this.tabPage9.Text = "tabPage9";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
-            // stationListControl1
-            // 
-            this.stationListControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.stationListControl1.Location = new System.Drawing.Point(3, 3);
-            this.stationListControl1.Name = "stationListControl1";
-            this.stationListControl1.Size = new System.Drawing.Size(1685, 637);
-            this.stationListControl1.TabIndex = 0;
-            // 
-            // ApStationList
-            // 
-            this.ApStationList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ApStationList.Location = new System.Drawing.Point(3, 3);
-            this.ApStationList.Name = "ApStationList";
-            this.ApStationList.Size = new System.Drawing.Size(1425, 605);
-            this.ApStationList.TabIndex = 0;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1699, 693);
+            this.ClientSize = new System.Drawing.Size(1428, 693);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

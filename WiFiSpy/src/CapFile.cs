@@ -123,7 +123,7 @@ namespace WiFiSpy.src
             
             device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
             device.Capture();
-            //device.Close();
+            device.Close();
 
             //CapFileReader reader = new CapFileReader();
             //reader.ReadCapFile(FilePath);
@@ -135,7 +135,8 @@ namespace WiFiSpy.src
 
                 for (int i = 0; i < _dataFrames.Count; i++)
                 {
-                    if (_dataFrames[i].MacSourceAddressLong == MacSourceAddrNumber || _dataFrames[i].MacTargetAddressLong == MacSourceAddrNumber)
+                    if (_dataFrames[i].SourceMacAddressLong == MacSourceAddrNumber ||
+                        _dataFrames[i].TargetMacAddressLong == MacSourceAddrNumber)
                     {
                         station.AddDataFrame(_dataFrames[i]);
                     }
@@ -223,7 +224,7 @@ namespace WiFiSpy.src
                 DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
 
                 //invalid packets are useless, probably encrypted
-                //if (_dataFrame.IsValidPacket)
+                if (_dataFrame.IsValidPacket)
                 {
                     _dataFrames.Add(_dataFrame);
 
@@ -231,19 +232,7 @@ namespace WiFiSpy.src
                         onReadDataFrame(_dataFrame);
                 }
             }
-
-            //link all the DataFrames to the Stations
-            foreach (Station station in _stations.Values)
-            {
-                long MacSourceAddrNumber = MacToLong(station.SourceMacAddress);
-                station.ClearDataFrames();
-
-                foreach (DataFrame frame in _dataFrames.Where(o => o.MacSourceAddressLong == MacSourceAddrNumber ||
-                                                                   o.MacTargetAddressLong == MacSourceAddrNumber))
-                {
-                    station.AddDataFrame(frame);
-                }
-            }
         }
     }
 }
+ 
