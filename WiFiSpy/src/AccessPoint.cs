@@ -6,7 +6,7 @@ using WiFiSpy.src.Packets;
 
 namespace WiFiSpy.src
 {
-    public class AccessPoint
+    public class AccessPoint : IEqualityComparer<AccessPoint>
     {
         public BeaconFrame BeaconFrame { get; private set; }
         private List<BeaconFrame> BeaconFrames { get; set; }
@@ -24,6 +24,14 @@ namespace WiFiSpy.src
             get
             {
                 return BeaconFrame.MacAddressStr;
+            }
+        }
+
+        public long MacAddressLong
+        {
+            get
+            {
+                return CapFile.MacToLong(BeaconFrame.MacAddress);
             }
         }
 
@@ -51,6 +59,11 @@ namespace WiFiSpy.src
             }
         }
 
+        public AccessPoint()
+        {
+
+        }
+
         public AccessPoint(BeaconFrame beaconFrame)
         {
             this.BeaconFrame = beaconFrame;
@@ -65,6 +78,16 @@ namespace WiFiSpy.src
         public override string ToString()
         {
             return "[" + MacAddress + "] " + SSID;
+        }
+
+        public bool Equals(AccessPoint x, AccessPoint y)
+        {
+            return x.BeaconFrame.MacAddressStr == y.BeaconFrame.MacAddressStr;
+        }
+
+        public int GetHashCode(AccessPoint obj)
+        {
+            return (int)CapFile.MacToLong(obj.BeaconFrame.MacAddress);
         }
     }
 }

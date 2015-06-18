@@ -17,6 +17,7 @@ namespace WiFiSpy
         int StationCount = 0;
         int AccessPointCount = 0;
         int DataFrameCount = 0;
+        private CaptureInfo captureInfo;
 
         public LoadingForm()
         {
@@ -29,7 +30,27 @@ namespace WiFiSpy
             capFile.onReadBeacon += capFile_onReadBeacon;
             capFile.onReadDataFrame += capFile_onReadDataFrame;
             capFile.onReadStation += capFile_onReadStation;
+        }
 
+        public void SetCaptureInfo(CaptureInfo info)
+        {
+            this.captureInfo = info;
+            info.onDataFrameProgress += Info_onDataFrameProgress;
+        }
+
+        private void Info_onDataFrameProgress(int Value, int Max)
+        {
+            if (sw.ElapsedMilliseconds >= 100)
+            {
+                sw = Stopwatch.StartNew();
+                progressBar1.Maximum = Max;
+                progressBar1.Value = Value;
+
+                lblLoadType.Text = "Linking " + Max + " Data Frames to " + captureInfo.Stations.Length + " stations, this might take some time...";
+                txtLoadName.Text = "";
+
+                Application.DoEvents();
+            }
         }
 
         void capFile_onReadStation(Station station)
@@ -57,7 +78,7 @@ namespace WiFiSpy
 
         public void SetFileName(string name)
         {
-            txtLoadingFile.Text = name;
+            txtLoadName.Text = name;
         }
 
         public void SetMinMaxProgressBar(int min, int max)

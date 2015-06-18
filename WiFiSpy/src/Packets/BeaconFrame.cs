@@ -8,7 +8,7 @@ using System.Text;
 
 namespace WiFiSpy.src.Packets
 {
-    public class BeaconFrame
+    public class BeaconFrame : IEqualityComparer<BeaconFrame>
     {
         public string Manufacturer { get; private set; }
         public string SSID { get; private set; }
@@ -29,11 +29,13 @@ namespace WiFiSpy.src.Packets
 
         public bool WPS_Enabled { get; private set; }
 
-        private PacketDotNet.Ieee80211.BeaconFrame Frame;
+        public BeaconFrame()
+        {
+
+        }
 
         public BeaconFrame(PacketDotNet.Ieee80211.BeaconFrame frame, DateTime TimeStamp)
         {
-            this.Frame = frame;
             this.Manufacturer = OuiParser.GetOuiByMac(frame.SourceAddress.GetAddressBytes());
             this.MacAddress = frame.SourceAddress.GetAddressBytes();
             this.TimeStamp = TimeStamp;
@@ -77,6 +79,16 @@ namespace WiFiSpy.src.Packets
 
             if (String.IsNullOrEmpty(SSID))
                 SSID = "";
+        }
+
+        public bool Equals(BeaconFrame x, BeaconFrame y)
+        {
+            return x.MacAddressStr == y.MacAddressStr;
+        }
+
+        public int GetHashCode(BeaconFrame obj)
+        {
+            return (int)CapFile.MacToLong(obj.MacAddress);
         }
     }
 }

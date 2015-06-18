@@ -85,6 +85,7 @@
     <Compile Include="src\CapFile.cs" />
     <Compile Include="src\CapFileReader.cs" />
     <Compile Include="src\CapManager.cs" />
+    <Compile Include="src\CaptureInfo.cs" />
     <Compile Include="src\Enums.cs" />
     <Compile Include="src\GpsLocation.cs" />
     <Compile Include="src\GpsParsers\GpsCsvParser.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="src\PcapUnmanagedStructures.cs" />
     <Compile Include="src\RawData\FrameControlField.cs" />
     <Compile Include="src\Station.cs" />
+    <Compile Include="src\Traffic\MDNS_Packet.cs" />
     <Compile Include="src\UnixTime.cs" />
     <EmbeddedResource Include="Controls\StationListControl.resx">
       <DependentUpon>StationListControl.cs</DependentUpon>

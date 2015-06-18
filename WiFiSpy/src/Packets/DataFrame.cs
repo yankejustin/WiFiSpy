@@ -5,19 +5,16 @@ using System.Text;
 
 namespace WiFiSpy.src.Packets
 {
-    public class DataFrame
+    public class DataFrame : IEqualityComparer<DataFrame>
     {
-        public PacketDotNet.Ieee80211.QosDataFrame Frame { get; private set; }
         private int PayloadOffset;
         private int PayloadLen;
         public DateTime TimeStamp { get; private set; }
 
         public byte[] SourceMacAddress
         {
-            get
-            {
-                return Frame.SourceAddress.GetAddressBytes();
-            }
+            get;
+            private set;
         }
 
         public string SourceMacAddressStr
@@ -28,13 +25,10 @@ namespace WiFiSpy.src.Packets
             }
         }
 
-
         public byte[] TargetMacAddress
         {
-            get
-            {
-                return Frame.DestinationAddress.GetAddressBytes();
-            }
+            get;
+            private set;
         }
 
         public string TargetMacAddressStr
@@ -73,11 +67,17 @@ namespace WiFiSpy.src.Packets
                 if (PayloadOffset > 0 && PayloadLen > 0)
                 {
                     byte[] ret = new byte[PayloadLen];
-                    Array.Copy(Frame.Bytes, PayloadOffset, ret, 0, ret.Length);
+                    Array.Copy(FramePayload, PayloadOffset, ret, 0, ret.Length);
                     return ret;
                 }
                 return new byte[0];
             }
+        }
+
+        public byte[] FramePayload
+        {
+            get;
+            private set;
         }
 
         public DhcpInfo DHCP
@@ -93,13 +93,35 @@ namespace WiFiSpy.src.Packets
             }
         }
 
-        public DataFrame(PacketDotNet.Ieee80211.QosDataFrame DataFrame, DateTime TimeStamp)
+        internal DataFrame()
         {
-            this.Frame = DataFrame;
+
+        }
+
+        public DataFrame(PacketDotNet.Ieee80211.DataDataFrame DataFrame, DateTime TimeStamp)
+        {
             this.TimeStamp = TimeStamp;
+
+            this.SourceMacAddress = DataFrame.SourceAddress.GetAddressBytes();
+            this.TargetMacAddress = DataFrame.DestinationAddress.GetAddressBytes();
 
             this.SourceMacAddressLong = CapFile.MacToLong(SourceMacAddress);
             this.TargetMacAddressLong = CapFile.MacToLong(TargetMacAddress);
+
+            this.FramePayload = DataFrame.Bytes;
+        }
+
+        public DataFrame(PacketDotNet.Ieee80211.QosDataFrame DataFrame, DateTime TimeStamp)
+        {
+            this.TimeStamp = TimeStamp;
+
+            this.SourceMacAddress = DataFrame.SourceAddress.GetAddressBytes();
+            this.TargetMacAddress = DataFrame.DestinationAddress.GetAddressBytes();
+
+            this.SourceMacAddressLong = CapFile.MacToLong(SourceMacAddress);
+            this.TargetMacAddressLong = CapFile.MacToLong(TargetMacAddress);
+
+            this.FramePayload = DataFrame.Bytes;
 
             //a hacky "parser" to get to the actual payload to get what we need
             int ReadOffset = 0;
@@ -182,6 +204,19 @@ namespace WiFiSpy.src.Packets
 
             string TempPayloadStr = ASCIIEncoding.ASCII.GetString(Payload, 0, Payload.Length > 512 ? 512 : Payload.Length);
             return "[" + SourceIp + "] -> [" + DestIp + "] " + TempPayloadStr;
+        }
+
+        public bool Equals(DataFrame x, DataFrame y)
+        {
+            return x.TimeStamp == y.TimeStamp &&
+                   x.SourceMacAddressLong == y.SourceMacAddressLong &&
+                   x.TargetMacAddressLong == y.TargetMacAddressLong &&
+                   x.PayloadLen == y.PayloadLen;
+        }
+
+        public int GetHashCode(DataFrame frame)
+        {
+            return (int)(frame.SourceMacAddressLong + frame.TimeStamp.ToBinary());
         }
     }
 }

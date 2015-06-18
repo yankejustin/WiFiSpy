@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using WiFiSpy.src.Packets;
 
 namespace WiFiSpy.src
 {
+    [Obsolete]
     public class CapManager
     {
         /// <summary>
@@ -13,6 +15,7 @@ namespace WiFiSpy.src
         /// </summary>
         /// <param name="CapFiles"></param>
         /// <returns></returns>
+        [Obsolete]
         public static Station[] GetStations(CapFile[] CapFiles)
         {
             SortedList<string, Station> StationMacs = new SortedList<string, Station>();
@@ -32,24 +35,15 @@ namespace WiFiSpy.src
                             Station _station = StationMacs[station.SourceMacAddressStr];
 
                             //merge the data from this point...
-
                             //copy the probes from other cap files
-                            foreach (ProbePacket probe in station.Probes)
-                            {
-                                if (_station.DataFrames.FirstOrDefault(o => o.TimeStamp.Ticks == probe.TimeStamp.Ticks) == null)
-                                {
-                                    _station.AddProbe(probe);
-                                }
-                            }
+                            HashSet<ProbePacket> probes = new HashSet<ProbePacket>(_station.Probes, new ProbePacket());
+                            probes.UnionWith(station.Probes);
+                            _station.SetProbes(probes.ToArray());
 
                             //copy the data frames from other cap files
-                            foreach (DataFrame frame in station.DataFrames)
-                            {
-                                if (_station.DataFrames.FirstOrDefault(o => o.TimeStamp.Ticks == frame.TimeStamp.Ticks) == null)
-                                {
-                                    _station.AddDataFrame(frame);
-                                }
-                            }
+                            HashSet<DataFrame> frames = new HashSet<DataFrame>(_station.DataFrames, new DataFrame());
+                            frames.UnionWith(station.DataFrames);
+                            _station.SetDataFrames(frames.ToArray());
                         }
                     }
                 }
@@ -64,6 +58,7 @@ namespace WiFiSpy.src
         /// </summary>
         /// <param name="CapFiles"></param>
         /// <returns></returns>
+        [Obsolete]
         public static SortedList<string, List<AccessPoint>> GetPossibleExtenders(CapFile[] CapFiles)
         {
             SortedList<string, List<AccessPoint>> AccessPoints = new SortedList<string, List<AccessPoint>>();
@@ -100,6 +95,7 @@ namespace WiFiSpy.src
         /// </summary>
         /// <param name="CapFiles"></param>
         /// <returns></returns>
+        [Obsolete]
         public static AccessPoint[] GetAllAccessPoints(CapFile[] CapFiles)
         {
             SortedList<string, AccessPoint> AccessPoints = new SortedList<string, AccessPoint>();
@@ -118,6 +114,7 @@ namespace WiFiSpy.src
             return AccessPoints.Values.ToArray();
         }
 
+        [Obsolete]
         public static Station[] GetStationsFromAP(AccessPoint TargetAP, CapFile[] CapFiles)
         {
             Station[] Stations = GetStations(CapFiles);

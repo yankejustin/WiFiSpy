@@ -20,20 +20,23 @@ namespace WiFiSpy
     public partial class MainForm : Form
     {
         private delegate void Invoky();
-        public static List<CapFile> CapFiles { get; private set; }
+        //public static List<CapFile> CapFiles { get; private set; }
         public static List<GpsLocation> GpsLocations { get; private set; }
         public const string DateTimeFormat = "dd-MM-yyyy HH:mm:ss";
 
         public AirservClient AirservClient { get; private set; }
         public CapFile LiveCaptureFile { get; private set; }
 
+        public CaptureInfo captureInfo { get; private set; }
+
+        private AccessPoint[] APList_AccessPoints;
 
         public MainForm()
         {
             InitializeComponent();
             OuiParser.Initialize("./Data/OUI.txt");
 
-            CapFiles = new List<CapFile>();
+            //CapFiles = new List<CapFile>();
             GpsLocations = new List<GpsLocation>();
 
             RefreshAll();
@@ -84,20 +87,27 @@ namespace WiFiSpy
             LoadingForm LoadForm = new LoadingForm();
             LoadForm.Show();
 
-            CapFiles.Clear();
+            //CapFiles.Clear();
+            List<CapFile> CapFiles = new List<CapFile>();
             foreach (string capFilePath in Directory.GetFiles(Environment.CurrentDirectory + "\\Data\\Captures", "*.cap"))
             {
                 CapFile capFile = new CapFile();
 
-
                 LoadForm.SetCapFile(capFile);
                 LoadForm.SetFileName(new FileInfo(capFilePath).Name);
-
 
                 capFile.ReadCap(capFilePath);
 
                 CapFiles.Add(capFile);
             }
+
+            this.captureInfo = new CaptureInfo();
+
+            LoadForm.SetCaptureInfo(this.captureInfo);
+
+            captureInfo.AddCapturefiles(CapFiles.ToArray());
+            CapFiles.Clear();
+
             LoadForm.Close();
         }
 
@@ -131,7 +141,7 @@ namespace WiFiSpy
 
             FillTrafficChart();
 
-            stationListControl1.FillStationList(CapManager.GetStations(MainForm.CapFiles.ToArray()));
+            stationListControl1.SetStations(captureInfo.Stations);
             FillExtenderList();
 
             FillApTree();
@@ -139,41 +149,10 @@ namespace WiFiSpy
 
         private void FillApTree()
         {
-            foreach (AccessPoint AP in CapManager.GetAllAccessPoints(CapFiles.ToArray()))
-            {
-                Station[] Stations = CapManager.GetStationsFromAP(AP, CapFiles.ToArray());
+            APList_AccessPoints = captureInfo.AccessPoints.ToArray();
 
-                if (Stations.Length > 0)
-                {
-
-                }
-
-                TreeNode[] FoundNodes = new TreeNode[0];
-                if ((FoundNodes = APTree.Nodes.Find(AP.MacAddress, false)).Length > 0)
-                {
-                    TreeNode _foundNode = FoundNodes[0];
-
-                    foreach (Station station in Stations)
-                    {
-                        if (_foundNode.Nodes.Find(station.SourceMacAddressStr, true).Length == 0)
-                        {
-                            TreeNode StationNode = _foundNode.Nodes.Add(station.SourceMacAddressStr, station.Manufacturer);
-                            StationNode.Tag = station;
-                        }
-                    }
-
-                    continue;
-                }
-
-                TreeNode node = APTree.Nodes.Add(AP.MacAddress, AP.SSID);
-                node.Tag = AP;
-
-                foreach (Station station in Stations)
-                {
-                    TreeNode StationNode = node.Nodes.Add(station.SourceMacAddressStr, station.Manufacturer);
-                    StationNode.Tag = station;
-                }
-            }
+            APList.VirtualListSize = APList_AccessPoints.Length;
+            APList.Refresh();
         }
 
         private void FillExtenderList()
@@ -181,21 +160,19 @@ namespace WiFiSpy
             LvRepeaterNames.Items.Clear();
             LvRepeaterList.Items.Clear();
 
-            SortedList<string, List<AccessPoint>> repeaters = CapManager.GetPossibleExtenders(CapFiles.ToArray());
+            SortedList<string, AccessPoint[]> repeaters = captureInfo.PossibleExtenders;
 
             for (int i = 0; i < repeaters.Count; i++)
             {
                 ListViewItem item = new ListViewItem(new string[]
                 {
                     repeaters.Keys[i],
-                    repeaters.Values[i].Count.ToString()
+                    repeaters.Values[i].Length.ToString()
                 });
                 item.Tag = repeaters.Values[i];
                 LvRepeaterNames.Items.Add(item);
             }
         }
-
-        
 
         private void FillHourlyChart()
         {
@@ -223,12 +200,10 @@ namespace WiFiSpy
                 int count = 0;
                 int hiddenCount = 0;
                 int stationCount = 0;
-                foreach (CapFile capFile in CapFiles)
-                {
-                    count += capFile.AccessPoints.Where(o => o.TimeStamp.Hour == i).Count();
-                    hiddenCount += capFile.AccessPoints.Where(o => o.BeaconFrame.IsHidden && o.TimeStamp.Hour == i).Count();
-                    stationCount += capFile.Stations.Where(o => o.TimeStamp.Hour == i).Count();
-                }
+
+                count += captureInfo.AccessPoints.Where(o => o.TimeStamp.Hour == i).Count();
+                hiddenCount += captureInfo.AccessPoints.Where(o => o.BeaconFrame.IsHidden && o.TimeStamp.Hour == i).Count();
+                stationCount += captureInfo.Stations.Where(o => o.TimeStamp.Hour == i).Count();
 
                 APSerie.Points.AddXY(i, count);
                 HiddenAPSerie.Points.AddXY(i, hiddenCount);
@@ -252,13 +227,10 @@ namespace WiFiSpy
             int APCount_Pie = 0;
             int hiddenCount_Pie = 0;
             int WpsEnabledCount_Pie = 0;
-
-            foreach (CapFile capFile in CapFiles)
-            {
-                APCount_Pie += capFile.AccessPoints.Where(o => !o.BeaconFrame.IsHidden).Count();
-                hiddenCount_Pie += capFile.AccessPoints.Where(o => o.BeaconFrame.IsHidden).Count();
-                WpsEnabledCount_Pie += capFile.AccessPoints.Where(o => o.WPS_Enabled).Count();
-            }
+            
+            APCount_Pie += captureInfo.AccessPoints.Where(o => !o.BeaconFrame.IsHidden).Count();
+            hiddenCount_Pie += captureInfo.AccessPoints.Where(o => o.BeaconFrame.IsHidden).Count();
+            WpsEnabledCount_Pie += captureInfo.AccessPoints.Where(o => o.WPS_Enabled).Count();
 
             Series APSerie_Pie = new Series
             {
@@ -295,7 +267,7 @@ namespace WiFiSpy
             Series UniqueStationsSerie = WeekStationOverviewChart.Series.Add("Unique Stations");
             UniqueStationsSerie.LegendText = "Unique Stations";
 
-            foreach (Station station in CapManager.GetStations(CapFiles.ToArray()))
+            foreach (Station station in captureInfo.Stations)
             {
                 if (station.DeviceTypeStr.Length > 0)
                 {
@@ -322,28 +294,26 @@ namespace WiFiSpy
 
             for(int i = 0; i < StationMacs.Count; i++)
             {
-                foreach (CapFile capFile in CapFiles)
+                foreach(Station station in captureInfo.Stations.Where(o => WeekStartDate.Year == o.TimeStamp.Year &&
+                                                                        WeekStartDate.Month == o.TimeStamp.Month &&
+                                                                        WeekStartDate.Day == o.TimeStamp.Day))
                 {
-                    foreach(Station station in capFile.Stations.Where(o => WeekStartDate.Year == o.TimeStamp.Year &&
-                                                                           WeekStartDate.Month == o.TimeStamp.Month &&
-                                                                           WeekStartDate.Day == o.TimeStamp.Day))
+                    if(!String.IsNullOrEmpty(station.SourceMacAddressStr))
                     {
-                        if(!String.IsNullOrEmpty(station.SourceMacAddressStr))
+                        if(!StationMacs.Values[i].Contains(station.SourceMacAddressStr))
                         {
-                            if(!StationMacs.Values[i].Contains(station.SourceMacAddressStr))
+                            if(DeviceList.ContainsKey(station.DeviceTypeStr))
                             {
-                                if(DeviceList.ContainsKey(station.DeviceTypeStr))
-                                {
-                                    DeviceList[station.DeviceTypeStr]++;
-                                    DeviceListCount[station.DeviceTypeStr]++;
-                                }
-
-                                StationMacs.Values[i].Add(station.SourceMacAddressStr);
-                                TotalStationCount++;
+                                DeviceList[station.DeviceTypeStr]++;
+                                DeviceListCount[station.DeviceTypeStr]++;
                             }
+
+                            StationMacs.Values[i].Add(station.SourceMacAddressStr);
+                            TotalStationCount++;
                         }
                     }
                 }
+
                 UniqueStationsSerie.Points.AddXY(StationMacs.Keys[i].ToString(), StationMacs.Values[i].Count);
 
                 for (int j = 0; j < DeviceList.Count; j++)
@@ -376,19 +346,17 @@ namespace WiFiSpy
             int SMTP = 0;
             int DNS = 0;
             int VNC = 0;
+            
 
-            foreach (CapFile capFile in CapFiles)
-            {
-                FTP += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 20 || o.PortDest == 20)).Count();
-                SFTP += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 22 || o.PortDest == 22)).Count();
-                HTTP += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 80 || o.PortDest == 80)).Count();
-                HTTPS += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 443 || o.PortDest == 443)).Count();
-                DNS += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 53 || o.PortDest == 53)).Count();
+            /*FTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 20 || o.PortDest == 20)).Count();
+            SFTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 22 || o.PortDest == 22)).Count();
+            HTTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 80 || o.PortDest == 80)).Count();
+            HTTPS += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 443 || o.PortDest == 443)).Count();
+            DNS += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 53 || o.PortDest == 53)).Count();
 
-                VNC += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5500 || o.PortDest == 5500)).Count();
-                VNC += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5800 || o.PortDest == 5800)).Count();
-                VNC += capFile.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5900 || o.PortDest == 5900)).Count();
-            }
+            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5500 || o.PortDest == 5500)).Count();
+            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5800 || o.PortDest == 5800)).Count();
+            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5900 || o.PortDest == 5900)).Count();*/
 
             Series APSerie_Pie = new Series
             {
@@ -428,7 +396,7 @@ namespace WiFiSpy
             {
                 LvRepeaterList.Items.Clear();
 
-                List<AccessPoint> Repeaters = LvRepeaterNames.SelectedItems[0].Tag as List<AccessPoint>;
+                AccessPoint[] Repeaters = LvRepeaterNames.SelectedItems[0].Tag as AccessPoint[];
 
                 if (Repeaters != null)
                 {
@@ -468,25 +436,54 @@ namespace WiFiSpy
                 {
                     this.AirservClient = sessingsForm.client;
                     this.LiveCaptureFile = new CapFile();
-
-                    MainForm.CapFiles.Add(LiveCaptureFile);
+                    captureInfo.Clear();
 
                     this.AirservClient.onPacketArrival += AirservClient_onPacketArrival;
 
                     liveModeToolStripMenuItem.Checked = true;
                 }
+
             }
         }
 
         private void AirservClient_onPacketArrival(PacketDotNet.Packet packet, DateTime ArrivalTime)
         {
             this.LiveCaptureFile.ProcessPacket(packet, ArrivalTime);
+            captureInfo.AddCapturefile(this.LiveCaptureFile);
+            this.LiveCaptureFile.Clear();
+
             this.Invoke(new Invoky(() => RefreshAll()));
         }
 
         private void APTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             
+        }
+
+        private void APList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (APList.SelectedIndices.Count > 0)
+            {
+                AccessPoint AP = this.APList_AccessPoints[APList.SelectedIndices[0]];
+                if (AP != null)
+                {
+                    ApStationList.SetStations(new Station[0]); //refresh fix
+                    ApStationList.SetStations(captureInfo.GetStationsFromAP(AP));
+                }
+            }
+        }
+
+        private void APList_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            AccessPoint AP = this.APList_AccessPoints[e.ItemIndex];
+            Station[] Stations = captureInfo.GetStationsFromAP(AP);
+
+            e.Item = new ListViewItem(new string[]
+            {
+                AP.SSID,
+                Stations.Length.ToString()
+            });
+            e.Item.Tag = AP;
         }
     }
 }

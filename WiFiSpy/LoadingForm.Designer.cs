@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblLoadType = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.txtLoadingFile = new System.Windows.Forms.Label();
+            this.txtLoadName = new System.Windows.Forms.Label();
             this.txtStationCount = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtAPCount = new System.Windows.Forms.Label();
@@ -39,14 +39,14 @@
             this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label1
+            // lblLoadType
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 80);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Loading file: ";
+            this.lblLoadType.AutoSize = true;
+            this.lblLoadType.Location = new System.Drawing.Point(13, 80);
+            this.lblLoadType.Name = "lblLoadType";
+            this.lblLoadType.Size = new System.Drawing.Size(67, 13);
+            this.lblLoadType.TabIndex = 0;
+            this.lblLoadType.Text = "Loading file: ";
             // 
             // progressBar1
             // 
@@ -55,14 +55,14 @@
             this.progressBar1.Size = new System.Drawing.Size(521, 23);
             this.progressBar1.TabIndex = 1;
             // 
-            // txtLoadingFile
+            // txtLoadName
             // 
-            this.txtLoadingFile.AutoSize = true;
-            this.txtLoadingFile.Location = new System.Drawing.Point(92, 80);
-            this.txtLoadingFile.Name = "txtLoadingFile";
-            this.txtLoadingFile.Size = new System.Drawing.Size(37, 13);
-            this.txtLoadingFile.TabIndex = 2;
-            this.txtLoadingFile.Text = "..........";
+            this.txtLoadName.AutoSize = true;
+            this.txtLoadName.Location = new System.Drawing.Point(92, 80);
+            this.txtLoadName.Name = "txtLoadName";
+            this.txtLoadName.Size = new System.Drawing.Size(37, 13);
+            this.txtLoadName.TabIndex = 2;
+            this.txtLoadName.Text = "..........";
             // 
             // txtStationCount
             // 
@@ -122,7 +122,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 143);
+            this.ClientSize = new System.Drawing.Size(545, 139);
             this.ControlBox = false;
             this.Controls.Add(this.txtDataFrameCount);
             this.Controls.Add(this.label9);
@@ -130,9 +130,9 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.txtStationCount);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.txtLoadingFile);
+            this.Controls.Add(this.txtLoadName);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblLoadType);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "LoadingForm";
@@ -145,9 +145,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblLoadType;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Label txtLoadingFile;
+        private System.Windows.Forms.Label txtLoadName;
         private System.Windows.Forms.Label txtStationCount;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label txtAPCount;

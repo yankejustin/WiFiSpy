@@ -73,11 +73,13 @@
             this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
-            this.APTree = new System.Windows.Forms.TreeView();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.ApStationList = new WiFiSpy.Controls.StationListControl();
             this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.APList = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -355,7 +357,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1691, 643);
+            this.tabPage2.Size = new System.Drawing.Size(1420, 643);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Stations";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -365,7 +367,7 @@
             this.stationListControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.stationListControl1.Location = new System.Drawing.Point(3, 3);
             this.stationListControl1.Name = "stationListControl1";
-            this.stationListControl1.Size = new System.Drawing.Size(1685, 637);
+            this.stationListControl1.Size = new System.Drawing.Size(1414, 637);
             this.stationListControl1.TabIndex = 0;
             // 
             // tabPage6
@@ -374,7 +376,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(1691, 643);
+            this.tabPage6.Size = new System.Drawing.Size(1420, 643);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "WiFi Repeaters";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -392,8 +394,8 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.LvRepeaterList);
-            this.splitContainer5.Size = new System.Drawing.Size(1685, 637);
-            this.splitContainer5.SplitterDistance = 398;
+            this.splitContainer5.Size = new System.Drawing.Size(1414, 637);
+            this.splitContainer5.SplitterDistance = 333;
             this.splitContainer5.TabIndex = 0;
             // 
             // LvRepeaterNames
@@ -406,7 +408,7 @@
             this.LvRepeaterNames.GridLines = true;
             this.LvRepeaterNames.Location = new System.Drawing.Point(0, 0);
             this.LvRepeaterNames.Name = "LvRepeaterNames";
-            this.LvRepeaterNames.Size = new System.Drawing.Size(398, 637);
+            this.LvRepeaterNames.Size = new System.Drawing.Size(333, 637);
             this.LvRepeaterNames.TabIndex = 0;
             this.LvRepeaterNames.UseCompatibleStateImageBehavior = false;
             this.LvRepeaterNames.View = System.Windows.Forms.View.Details;
@@ -434,7 +436,7 @@
             this.LvRepeaterList.GridLines = true;
             this.LvRepeaterList.Location = new System.Drawing.Point(0, 0);
             this.LvRepeaterList.Name = "LvRepeaterList";
-            this.LvRepeaterList.Size = new System.Drawing.Size(1283, 637);
+            this.LvRepeaterList.Size = new System.Drawing.Size(1077, 637);
             this.LvRepeaterList.TabIndex = 0;
             this.LvRepeaterList.UseCompatibleStateImageBehavior = false;
             this.LvRepeaterList.View = System.Windows.Forms.View.Details;
@@ -465,7 +467,7 @@
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(1691, 643);
+            this.tabPage7.Size = new System.Drawing.Size(1420, 643);
             this.tabPage7.TabIndex = 3;
             this.tabPage7.Text = "Access Points";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -478,23 +480,14 @@
             // 
             // splitContainer6.Panel1
             // 
-            this.splitContainer6.Panel1.Controls.Add(this.APTree);
+            this.splitContainer6.Panel1.Controls.Add(this.APList);
             // 
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.tabControl3);
-            this.splitContainer6.Size = new System.Drawing.Size(1685, 637);
-            this.splitContainer6.SplitterDistance = 242;
+            this.splitContainer6.Size = new System.Drawing.Size(1414, 637);
+            this.splitContainer6.SplitterDistance = 203;
             this.splitContainer6.TabIndex = 1;
-            // 
-            // APTree
-            // 
-            this.APTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.APTree.Location = new System.Drawing.Point(0, 0);
-            this.APTree.Name = "APTree";
-            this.APTree.Size = new System.Drawing.Size(242, 637);
-            this.APTree.TabIndex = 0;
-            this.APTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.APTree_AfterSelect);
             // 
             // tabControl3
             // 
@@ -504,7 +497,7 @@
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(1439, 637);
+            this.tabControl3.Size = new System.Drawing.Size(1207, 637);
             this.tabControl3.TabIndex = 0;
             // 
             // tabPage8
@@ -513,7 +506,7 @@
             this.tabPage8.Location = new System.Drawing.Point(4, 22);
             this.tabPage8.Name = "tabPage8";
             this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(1431, 611);
+            this.tabPage8.Size = new System.Drawing.Size(1199, 611);
             this.tabPage8.TabIndex = 0;
             this.tabPage8.Text = "Stations";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -523,7 +516,7 @@
             this.ApStationList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ApStationList.Location = new System.Drawing.Point(3, 3);
             this.ApStationList.Name = "ApStationList";
-            this.ApStationList.Size = new System.Drawing.Size(1425, 605);
+            this.ApStationList.Size = new System.Drawing.Size(1193, 605);
             this.ApStationList.TabIndex = 0;
             // 
             // tabPage9
@@ -535,6 +528,33 @@
             this.tabPage9.TabIndex = 1;
             this.tabPage9.Text = "tabPage9";
             this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // APList
+            // 
+            this.APList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.APList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.APList.FullRowSelect = true;
+            this.APList.GridLines = true;
+            this.APList.Location = new System.Drawing.Point(0, 0);
+            this.APList.Name = "APList";
+            this.APList.Size = new System.Drawing.Size(203, 637);
+            this.APList.TabIndex = 0;
+            this.APList.UseCompatibleStateImageBehavior = false;
+            this.APList.View = System.Windows.Forms.View.Details;
+            this.APList.VirtualMode = true;
+            this.APList.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.APList_RetrieveVirtualItem);
+            this.APList.SelectedIndexChanged += new System.EventHandler(this.APList_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "AP Name";
+            this.columnHeader1.Width = 131;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Stations";
             // 
             // MainForm
             // 
@@ -621,13 +641,15 @@
         private System.Windows.Forms.ColumnHeader columnHeader23;
         private System.Windows.Forms.TabPage tabPage7;
         private System.Windows.Forms.SplitContainer splitContainer6;
-        private System.Windows.Forms.TreeView APTree;
         private System.Windows.Forms.TabControl tabControl3;
         private System.Windows.Forms.TabPage tabPage8;
         private System.Windows.Forms.TabPage tabPage9;
         private System.Windows.Forms.ToolStripMenuItem liveModeToolStripMenuItem;
         private Controls.StationListControl stationListControl1;
         private Controls.StationListControl ApStationList;
+        private System.Windows.Forms.ListView APList;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }
 

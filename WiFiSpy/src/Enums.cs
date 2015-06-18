@@ -279,4 +279,10 @@ namespace WiFiSpy.src
         ACK = 5,
         NAK = 6,
     };
+
+    public enum MDNS_Response
+    {
+        NoError = 0,
+
+    };
 }

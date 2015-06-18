@@ -52,6 +52,8 @@
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader26 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader27 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.StationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.followDeviceByGPSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -67,17 +69,16 @@
             this.StationHttpLocList = new System.Windows.Forms.ListView();
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.StationMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.followDeviceByGPSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.columnHeader18 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.StationMenuStrip.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            this.StationMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer4
@@ -227,6 +228,7 @@
             this.StationList.View = System.Windows.Forms.View.Details;
             this.StationList.VirtualMode = true;
             this.StationList.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.StationList_RetrieveVirtualItem);
+            this.StationList.SelectedIndexChanged += new System.EventHandler(this.StationList_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
@@ -288,6 +290,20 @@
             this.columnHeader27.Text = "Device Name";
             this.columnHeader27.Width = 100;
             // 
+            // StationMenuStrip
+            // 
+            this.StationMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.followDeviceByGPSToolStripMenuItem});
+            this.StationMenuStrip.Name = "StationMenuStrip";
+            this.StationMenuStrip.Size = new System.Drawing.Size(188, 26);
+            // 
+            // followDeviceByGPSToolStripMenuItem
+            // 
+            this.followDeviceByGPSToolStripMenuItem.Name = "followDeviceByGPSToolStripMenuItem";
+            this.followDeviceByGPSToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.followDeviceByGPSToolStripMenuItem.Text = "Follow Device by GPS";
+            this.followDeviceByGPSToolStripMenuItem.Click += new System.EventHandler(this.followDeviceByGPSToolStripMenuItem_Click);
+            // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.tabPage4);
@@ -330,6 +346,7 @@
             this.columnHeader7,
             this.columnHeader12,
             this.columnHeader8,
+            this.columnHeader18,
             this.columnHeader9});
             this.StationTrafficList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StationTrafficList.FullRowSelect = true;
@@ -340,7 +357,6 @@
             this.StationTrafficList.TabIndex = 0;
             this.StationTrafficList.UseCompatibleStateImageBehavior = false;
             this.StationTrafficList.View = System.Windows.Forms.View.Details;
-            this.StationTrafficList.SelectedIndexChanged += new System.EventHandler(this.StationTrafficList_SelectedIndexChanged);
             // 
             // columnHeader5
             // 
@@ -382,7 +398,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(1677, 289);
+            this.tabPage5.Size = new System.Drawing.Size(1318, 238);
             this.tabPage5.TabIndex = 2;
             this.tabPage5.Text = "HTTP Locations";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -397,7 +413,7 @@
             this.StationHttpLocList.GridLines = true;
             this.StationHttpLocList.Location = new System.Drawing.Point(3, 3);
             this.StationHttpLocList.Name = "StationHttpLocList";
-            this.StationHttpLocList.Size = new System.Drawing.Size(1671, 283);
+            this.StationHttpLocList.Size = new System.Drawing.Size(1312, 232);
             this.StationHttpLocList.TabIndex = 0;
             this.StationHttpLocList.UseCompatibleStateImageBehavior = false;
             this.StationHttpLocList.View = System.Windows.Forms.View.Details;
@@ -412,19 +428,10 @@
             this.columnHeader15.Text = "URL";
             this.columnHeader15.Width = 691;
             // 
-            // StationMenuStrip
+            // columnHeader18
             // 
-            this.StationMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.followDeviceByGPSToolStripMenuItem});
-            this.StationMenuStrip.Name = "StationMenuStrip";
-            this.StationMenuStrip.Size = new System.Drawing.Size(188, 26);
-            // 
-            // followDeviceByGPSToolStripMenuItem
-            // 
-            this.followDeviceByGPSToolStripMenuItem.Name = "followDeviceByGPSToolStripMenuItem";
-            this.followDeviceByGPSToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.followDeviceByGPSToolStripMenuItem.Text = "Follow Device by GPS";
-            this.followDeviceByGPSToolStripMenuItem.Click += new System.EventHandler(this.followDeviceByGPSToolStripMenuItem_Click);
+            this.columnHeader18.Text = "Status";
+            this.columnHeader18.Width = 103;
             // 
             // StationListControl
             // 
@@ -439,10 +446,10 @@
             this.splitContainer4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.StationMenuStrip.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
-            this.StationMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -489,5 +496,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader15;
         private System.Windows.Forms.ContextMenuStrip StationMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem followDeviceByGPSToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader18;
     }
 }

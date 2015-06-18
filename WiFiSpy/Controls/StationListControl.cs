@@ -22,14 +22,19 @@ namespace WiFiSpy.Controls
             InitializeComponent();
         }
 
-        private void btnApplyStationFilter_Click(object sender, EventArgs e)
+        public void SetStations(Station[] InitialStationList)
         {
-            FillStationList(InitialStationList);
+            this.InitialStationList = InitialStationList;
+
+            FilterStations = InitialStationList.OrderByDescending(o => o.LastSeenDate).ToArray();
+            StationList.VirtualListSize = FilterStations.Length;
         }
 
-        public void FillStationList(Station[] stations)
+        private void btnApplyStationFilter_Click(object sender, EventArgs e)
         {
             StationList.Items.Clear();
+
+            Station[] stations = InitialStationList;
 
             if (cbDeviceNameFilter.Checked)
             {
@@ -159,48 +164,6 @@ namespace WiFiSpy.Controls
             e.Item = item;
         }
 
-        private void StationTrafficList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (StationList.SelectedIndices.Count > 0)
-            {
-                Station station = this.FilterStations[StationList.SelectedIndices[0]];
-
-                if (station != null)
-                {
-                    StationTrafficList.Items.Clear();
-                    StationHttpLocList.Items.Clear();
-
-                    foreach (WiFiSpy.src.Packets.DataFrame frame in station.DataFrames)
-                    {
-                        ListViewItem item = new ListViewItem(new string[]
-                        {
-                            frame.TimeStamp.ToString(MainForm.DateTimeFormat),
-                            frame.SourceIp,
-                            frame.PortSource.ToString(),
-                            frame.DestIp,
-                            frame.PortDest.ToString(),
-                            frame.Payload.Length.ToString(),
-                            ASCIIEncoding.ASCII.GetString(frame.Payload)
-                        });
-                        item.Tag = frame;
-                        StationTrafficList.Items.Add(item);
-
-                        string HttpLocation = "";
-                        if ((HttpLocation = frame.GetHttpLocation()).Length > 0)
-                        {
-                            ListViewItem HttpItem = new ListViewItem(new string[]
-                            {
-                                frame.TimeStamp.ToString(MainForm.DateTimeFormat),
-                                HttpLocation
-                            });
-                            HttpItem.Tag = frame;
-                            StationHttpLocList.Items.Add(HttpItem);
-                        }
-                    }
-                }
-            }
-        }
-
         private void followDeviceByGPSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (StationList.SelectedIndices.Count > 0)
@@ -222,6 +185,49 @@ namespace WiFiSpy.Controls
                     else
                     {
                         MessageBox.Show("No GPS Data is known for this station");
+                    }
+                }
+            }
+        }
+
+        private void StationList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (StationList.SelectedIndices.Count > 0)
+            {
+                Station station = this.FilterStations[StationList.SelectedIndices[0]];
+
+                if (station != null)
+                {
+                    StationTrafficList.Items.Clear();
+                    StationHttpLocList.Items.Clear();
+
+                    foreach (WiFiSpy.src.Packets.DataFrame frame in station.DataFrames)
+                    {
+                        ListViewItem item = new ListViewItem(new string[]
+                        {
+                            frame.TimeStamp.ToString(MainForm.DateTimeFormat),
+                            frame.SourceIp,
+                            frame.PortSource.ToString(),
+                            frame.DestIp,
+                            frame.PortDest.ToString(),
+                            frame.Payload.Length.ToString(),
+                            frame.IsValidPacket ? "Open / Readable" : "Encrypted ?",
+                            ASCIIEncoding.ASCII.GetString(frame.Payload)
+                        });
+                        item.Tag = frame;
+                        StationTrafficList.Items.Add(item);
+
+                        string HttpLocation = "";
+                        if ((HttpLocation = frame.GetHttpLocation()).Length > 0)
+                        {
+                            ListViewItem HttpItem = new ListViewItem(new string[]
+                            {
+                                frame.TimeStamp.ToString(MainForm.DateTimeFormat),
+                                HttpLocation
+                            });
+                            HttpItem.Tag = frame;
+                            StationHttpLocList.Items.Add(HttpItem);
+                        }
                     }
                 }
             }

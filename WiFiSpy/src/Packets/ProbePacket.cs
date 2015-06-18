@@ -6,17 +6,14 @@ using System.Text;
 
 namespace WiFiSpy.src.Packets
 {
-    public class ProbePacket
+    public class ProbePacket : IEqualityComparer<ProbePacket>
     {
-        public PacketDotNet.Ieee80211.ProbeRequestFrame ProbeRequestFrame { get; private set; }
         public DateTime TimeStamp { get; private set; }
 
         public byte[] SourceMacAddress
         {
-            get
-            {
-                return ProbeRequestFrame.SourceAddress.GetAddressBytes();
-            }
+            get;
+            private set;
         }
 
         public string SourceMacAddressStr
@@ -45,12 +42,18 @@ namespace WiFiSpy.src.Packets
         public string SSID { get; private set; }
         public bool IsHidden { get; private set; }
 
+        internal ProbePacket()
+        {
+
+        }
+
         public ProbePacket(PacketDotNet.Ieee80211.ProbeRequestFrame probeRequestFrame, DateTime TimeStamp)
         {
-            this.ProbeRequestFrame = probeRequestFrame;
             this.TimeStamp = TimeStamp;
 
-            foreach (InformationElement element in ProbeRequestFrame.InformationElements)
+            this.SourceMacAddress = probeRequestFrame.SourceAddress.GetAddressBytes();
+
+            foreach (InformationElement element in probeRequestFrame.InformationElements)
             {
                 switch (element.Id)
                 {
@@ -80,6 +83,17 @@ namespace WiFiSpy.src.Packets
         public override string ToString()
         {
             return "[Probe] SSID: " + SSID + ", Is Hidden: " + IsHidden;
+        }
+
+        public bool Equals(ProbePacket x, ProbePacket y)
+        {
+            return x.TimeStamp == y.TimeStamp &&
+                   x.SourceMacAddressStr == y.SourceMacAddressStr;
+        }
+
+        public int GetHashCode(ProbePacket obj)
+        {
+            return (int)obj.TimeStamp.ToBinary();
         }
     }
 }

@@ -6,9 +6,13 @@ using WiFiSpy.src.Packets;
 
 namespace WiFiSpy.src
 {
-    public class Station
+    public class Station : IEqualityComparer<Station>
     {
-        public ProbePacket InitialProbe { get; private set; }
+        public ProbePacket InitialProbe
+        {
+            get;
+            private set;
+        }
 
         private List<ProbePacket> _probes;
         private List<DataFrame> _payloadTraffic;
@@ -25,7 +29,7 @@ namespace WiFiSpy.src
         {
             get
             {
-                return _payloadTraffic.OrderBy(o => o.TimeStamp.Ticks).ToArray();
+                return _payloadTraffic.ToArray();
             }
         }
 
@@ -37,6 +41,14 @@ namespace WiFiSpy.src
             }
         }
 
+        public long SourceMacAddressLong
+        {
+            get
+            {
+                return CapFile.MacToLong(InitialProbe.SourceMacAddress);
+            }
+        }
+
         public string SourceMacAddressStr
         {
             get
@@ -44,6 +56,8 @@ namespace WiFiSpy.src
                 return BitConverter.ToString(SourceMacAddress);
             }
         }
+
+        internal CaptureInfo CaptureInfo { get; set; }
 
         /// <summary>
         /// Grab the Local IP Addresses from this station
@@ -63,7 +77,7 @@ namespace WiFiSpy.src
                         {
                             continue;
                         }
-
+                        
                         if (dataFrame.SourceMacAddressStr == InitialProbe.SourceMacAddressStr)
                         {
                             if (!IPs.Contains(dataFrame.SourceIp))
@@ -106,10 +120,7 @@ namespace WiFiSpy.src
 
         public DateTime TimeStamp
         {
-            get
-            {
-                return InitialProbe.TimeStamp;
-            }
+            get { return InitialProbe.TimeStamp; }
         }
 
         public bool IsAndroidDevice
@@ -242,6 +253,11 @@ namespace WiFiSpy.src
             }
         }
 
+        public Station()
+        {
+
+        }
+
         public Station(ProbePacket InitialProbe)
         {
             this.InitialProbe = InitialProbe;
@@ -257,12 +273,30 @@ namespace WiFiSpy.src
                 this._probes.Add(probe);
             }
         }
+        
+        internal void SetProbes(ProbePacket[] probes)
+        {
+            lock (_probes)
+            {
+                this._probes.Clear();
+                this._probes.AddRange(probes);
+            }
+        }
 
         internal void AddDataFrame(DataFrame dataFrame)
         {
             lock (_payloadTraffic)
             {
                 this._payloadTraffic.Add(dataFrame);
+            }
+        }
+
+        internal void SetDataFrames(DataFrame[] dataFrames)
+        {
+            lock (_payloadTraffic)
+            {
+                this._payloadTraffic.Clear();
+                this._payloadTraffic.AddRange(dataFrames);
             }
         }
 
@@ -359,6 +393,16 @@ namespace WiFiSpy.src
                 }
             }
             return gpsLocs.ToArray();
+        }
+
+        public bool Equals(Station x, Station y)
+        {
+            return x.SourceMacAddressStr == y.SourceMacAddressStr;
+        }
+
+        public int GetHashCode(Station obj)
+        {
+            return (int)CapFile.MacToLong(obj.SourceMacAddress);
         }
     }
 }

@@ -3,6 +3,7 @@ using SharpPcap;
 using SharpPcap.LibPcap;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using WiFiSpy.src.Packets;
@@ -73,7 +74,7 @@ namespace WiFiSpy.src
                     if (!AP.BeaconFrame.IsHidden)
                     {
                         if (!extenders.ContainsKey(AP.SSID))
-                                extenders.Add(AP.SSID, new List<AccessPoint>());
+                            extenders.Add(AP.SSID, new List<AccessPoint>());
 
                         extenders[AP.SSID].Add(AP);
                     }
@@ -110,7 +111,6 @@ namespace WiFiSpy.src
             try
             {
                 // Get an offline device
-
                 device = new CaptureFileReaderDevice(FilePath);
 
                 // Open the device
@@ -127,21 +127,21 @@ namespace WiFiSpy.src
 
             //CapFileReader reader = new CapFileReader();
             //reader.ReadCapFile(FilePath);
+        }
 
-            //link all the DataFrames to the Stations
-            foreach (Station station in _stations.Values)
-            {
-                long MacSourceAddrNumber = MacToLong(station.SourceMacAddress);
+        /// <summary>
+        /// Clear the logged traffic
+        /// </summary>
+        public void Clear()
+        {
+            _beacons.Clear();
+            _accessPoints.Clear();
 
-                for (int i = 0; i < _dataFrames.Count; i++)
-                {
-                    if (_dataFrames[i].SourceMacAddressLong == MacSourceAddrNumber ||
-                        _dataFrames[i].TargetMacAddressLong == MacSourceAddrNumber)
-                    {
-                        station.AddDataFrame(_dataFrames[i]);
-                    }
-                }
-            }
+            _stations.Clear();
+            _dataFrames.Clear();
+
+            if (_APExtenders != null)
+                _APExtenders.Clear();
         }
 
         internal static long MacToLong(byte[] MacAddress)
@@ -156,7 +156,7 @@ namespace WiFiSpy.src
         {
             packetsProcessed++;
 
-            if (packetsProcessed == 43989)
+            if (packetsProcessed == 266660)
             {
                 
             }
@@ -224,7 +224,25 @@ namespace WiFiSpy.src
                 DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
 
                 //invalid packets are useless, probably encrypted
+                //if (_dataFrame.IsValidPacket)
+                {
+                    _dataFrames.Add(_dataFrame);
+
+                    if (onReadDataFrame != null)
+                        onReadDataFrame(_dataFrame);
+                }
+            }
+            else if(DataDataFrame != null)
+            {
+                DataFrame _dataFrame = new Packets.DataFrame(DataDataFrame, ArrivalDate);
+
                 if (_dataFrame.IsValidPacket)
+                {
+
+                }
+
+                //invalid packets are useless, probably encrypted
+                //if (_dataFrame.IsValidPacket)
                 {
                     _dataFrames.Add(_dataFrame);
 
@@ -235,4 +253,3 @@ namespace WiFiSpy.src
         }
     }
 }
- 
