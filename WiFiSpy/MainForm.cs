@@ -339,24 +339,32 @@ namespace WiFiSpy
             TrafficPieChart.Titles.Clear();
             TrafficPieChart.Series.Clear();
 
-            int FTP = 0;
-            int SFTP = 0;
-            int HTTP = 0;
-            int HTTPS = 0;
-            int SMTP = 0;
-            int DNS = 0;
+            int FTP = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 20 || o.PortDest == 20)).Count();
+            int SFTP = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 22 || o.PortDest == 22)).Count();
+            int HTTP = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 80 || o.PortDest == 80)).Count();
+            int HTTPS = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 443 || o.PortDest == 443)).Count();
+            int SMTP = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 25 || o.PortDest == 25)).Count();
+            int DNS = captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 53 || o.PortDest == 53)).Count();
+
             int VNC = 0;
-            
+            VNC += captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5500 || o.PortDest == 5500)).Count();
+            VNC += captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5800 || o.PortDest == 5800)).Count();
+            VNC += captureInfo.FloatingDataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5900 || o.PortDest == 5900)).Count();
 
-            /*FTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 20 || o.PortDest == 20)).Count();
-            SFTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 22 || o.PortDest == 22)).Count();
-            HTTP += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 80 || o.PortDest == 80)).Count();
-            HTTPS += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 443 || o.PortDest == 443)).Count();
-            DNS += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 53 || o.PortDest == 53)).Count();
+            foreach (Station station in captureInfo.Stations)
+            {
+                FTP += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 20 || o.PortDest == 20)).Count();
+                SFTP += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 22 || o.PortDest == 22)).Count();
+                HTTP += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 80 || o.PortDest == 80)).Count();
+                HTTPS += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 443 || o.PortDest == 443)).Count();
+                SMTP += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 25 || o.PortDest == 25)).Count();
+                DNS += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 53 || o.PortDest == 53)).Count();
+                
 
-            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5500 || o.PortDest == 5500)).Count();
-            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5800 || o.PortDest == 5800)).Count();
-            VNC += captureInfo.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5900 || o.PortDest == 5900)).Count();*/
+                VNC += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5500 || o.PortDest == 5500)).Count();
+                VNC += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5800 || o.PortDest == 5800)).Count();
+                VNC += station.DataFrames.Where(o => o.isIPv4 && o.isTCP && (o.PortSource == 5900 || o.PortDest == 5900)).Count();
+            }
 
             Series APSerie_Pie = new Series
             {
