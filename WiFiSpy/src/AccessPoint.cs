@@ -31,7 +31,7 @@ namespace WiFiSpy.src
         {
             get
             {
-                return CapFile.MacToLong(BeaconFrame.MacAddress);
+                return Utils.MacToLong(BeaconFrame.MacAddress);
             }
         }
 
@@ -87,7 +87,7 @@ namespace WiFiSpy.src
 
         public int GetHashCode(AccessPoint obj)
         {
-            return (int)CapFile.MacToLong(obj.BeaconFrame.MacAddress);
+            return (int)Utils.MacToLong(obj.BeaconFrame.MacAddress);
         }
     }
 }

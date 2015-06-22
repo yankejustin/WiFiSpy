@@ -29,6 +29,7 @@ namespace WiFiSpy.src
         private SortedList<string, AccessPoint[]> _APExtenders;
         private SortedList<long, Station> _stations;
         private List<DataFrame> _dataFrames;
+        private List<AuthRequestFrame> _authRequestFrames;
 
         public BeaconFrame[] Beacons
         {
@@ -57,6 +58,13 @@ namespace WiFiSpy.src
             get
             {
                 return _dataFrames.ToArray();
+            }
+        }
+        public AuthRequestFrame[] AuthRequestFrames
+        {
+            get
+            {
+                return _authRequestFrames.ToArray();
             }
         }
 
@@ -102,6 +110,7 @@ namespace WiFiSpy.src
             _accessPoints = new SortedList<long, AccessPoint>();
             _stations = new SortedList<long, Station>();
             _dataFrames = new List<DataFrame>();
+            _authRequestFrames = new List<AuthRequestFrame>();
         }
 
         public void ReadCap(string FilePath)
@@ -144,19 +153,12 @@ namespace WiFiSpy.src
                 _APExtenders.Clear();
         }
 
-        internal static long MacToLong(byte[] MacAddress)
-        {
-            byte[] MacAddrTemp = new byte[8];
-            Array.Copy(MacAddress, MacAddrTemp, 6);
-            return BitConverter.ToInt64(MacAddrTemp, 0);
-        }
-
         int packetsProcessed = 0;
         private void device_OnPacketArrival(object sender, CaptureEventArgs e)
         {
             packetsProcessed++;
 
-            if (packetsProcessed == 266660)
+            if (packetsProcessed == 452750)
             {
                 
             }
@@ -166,7 +168,7 @@ namespace WiFiSpy.src
                 Packet packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
 
                 if (packet != null)
-                    ProcessPacket(packet, e.Packet.Timeval.Date);
+                    ProcessPacket(packet, Utils.GetRealArrivalTime(e.Packet.Timeval.Date));
             }
         }
 
@@ -177,7 +179,7 @@ namespace WiFiSpy.src
             PacketDotNet.Ieee80211.QosDataFrame DataFrame = packet as PacketDotNet.Ieee80211.QosDataFrame;
 
             PacketDotNet.Ieee80211.DeauthenticationFrame DeAuthFrame = packet as PacketDotNet.Ieee80211.DeauthenticationFrame;
-            PacketDotNet.Ieee80211.AssociationRequestFrame AuthFrame2 = packet as PacketDotNet.Ieee80211.AssociationRequestFrame;
+            PacketDotNet.Ieee80211.AssociationRequestFrame AuthRequestFrame = packet as PacketDotNet.Ieee80211.AssociationRequestFrame;
 
             PacketDotNet.Ieee80211.DataDataFrame DataDataFrame = packet as PacketDotNet.Ieee80211.DataDataFrame;
 
@@ -186,7 +188,7 @@ namespace WiFiSpy.src
                 BeaconFrame beaconFrame = new BeaconFrame(beacon, ArrivalDate);
                 _beacons.Add(beaconFrame);
 
-                long MacAddrNumber = MacToLong(beaconFrame.MacAddress);
+                long MacAddrNumber = Utils.MacToLong(beaconFrame.MacAddress);
 
                 //check for APs with this Mac Address
                 AccessPoint AP = null;
@@ -206,7 +208,7 @@ namespace WiFiSpy.src
                 ProbePacket probe = new ProbePacket(probeRequest, ArrivalDate);
                 Station station = null;
 
-                long MacAddrNumber = MacToLong(probe.SourceMacAddress);
+                long MacAddrNumber = Utils.MacToLong(probe.SourceMacAddress);
 
                 if (!_stations.TryGetValue(MacAddrNumber, out station))
                 {
@@ -222,33 +224,24 @@ namespace WiFiSpy.src
             else if (DataFrame != null)
             {
                 DataFrame _dataFrame = new Packets.DataFrame(DataFrame, ArrivalDate);
+                
+                _dataFrames.Add(_dataFrame);
 
-                //invalid packets are useless, probably encrypted
-                //if (_dataFrame.IsValidPacket)
-                {
-                    _dataFrames.Add(_dataFrame);
-
-                    if (onReadDataFrame != null)
-                        onReadDataFrame(_dataFrame);
-                }
+                if (onReadDataFrame != null)
+                    onReadDataFrame(_dataFrame);
             }
-            else if(DataDataFrame != null)
+            else if (DataDataFrame != null)
             {
                 DataFrame _dataFrame = new Packets.DataFrame(DataDataFrame, ArrivalDate);
+                
+                _dataFrames.Add(_dataFrame);
 
-                if (_dataFrame.IsValidPacket)
-                {
-
-                }
-
-                //invalid packets are useless, probably encrypted
-                //if (_dataFrame.IsValidPacket)
-                {
-                    _dataFrames.Add(_dataFrame);
-
-                    if (onReadDataFrame != null)
-                        onReadDataFrame(_dataFrame);
-                }
+                if (onReadDataFrame != null)
+                    onReadDataFrame(_dataFrame);
+            }
+            else if (AuthRequestFrame != null)
+            {
+                _authRequestFrames.Add(new AuthRequestFrame(AuthRequestFrame, ArrivalDate));
             }
         }
     }

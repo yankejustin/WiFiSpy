@@ -149,7 +149,7 @@ namespace WiFiSpy
 
         private void FillApTree()
         {
-            APList_AccessPoints = captureInfo.AccessPoints.ToArray();
+            APList_AccessPoints = captureInfo.AccessPoints.OrderBy(o => o.SSID).ToArray();
 
             APList.VirtualListSize = APList_AccessPoints.Length;
             APList.Refresh();
@@ -486,12 +486,20 @@ namespace WiFiSpy
             AccessPoint AP = this.APList_AccessPoints[e.ItemIndex];
             Station[] Stations = captureInfo.GetStationsFromAP(AP);
 
+            string DeCloak_SSID = "";
+            bool IsDeCloaked = captureInfo.DeCloakAP(AP, ref DeCloak_SSID);
+            bool IsDanger = captureInfo.IsAccessPointDanger(AP);
+
             e.Item = new ListViewItem(new string[]
             {
-                AP.SSID,
-                Stations.Length.ToString()
+                IsDeCloaked ? DeCloak_SSID : AP.SSID,
+                Stations.Length.ToString(),
+                IsDeCloaked.ToString()
             });
             e.Item.Tag = AP;
+
+            if (IsDanger)
+                e.Item.BackColor = Color.Red;
         }
     }
 }

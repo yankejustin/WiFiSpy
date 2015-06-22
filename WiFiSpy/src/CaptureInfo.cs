@@ -14,6 +14,7 @@ namespace WiFiSpy.src
         private SortedList<string, AccessPoint[]> _APExtenders;
         private SortedList<long, Station> _stations;
         private List<DataFrame> _dataFrames;
+        private List<AuthRequestFrame> _authRequestFrames;
 
         public delegate void DataFrameProgressCallback(int Value, int Max);
         public event DataFrameProgressCallback onDataFrameProgress;
@@ -38,6 +39,13 @@ namespace WiFiSpy.src
             get
             {
                 return _stations.Values.ToArray();
+            }
+        }
+        public AuthRequestFrame[] AuthRequestFrames
+        {
+            get
+            {
+                return _authRequestFrames.ToArray();
             }
         }
 
@@ -95,6 +103,7 @@ namespace WiFiSpy.src
             _accessPoints = new SortedList<long, AccessPoint>();
             _stations = new SortedList<long, Station>();
             _dataFrames = new List<DataFrame>();
+            _authRequestFrames = new List<AuthRequestFrame>();
         }
 
         public void AddCapturefile(CapFile capFile)
@@ -122,7 +131,7 @@ namespace WiFiSpy.src
 
                 foreach(AccessPoint AP in APs.ToArray())
                 {
-                    long MacAddrNumber = CapFile.MacToLong(AP.BeaconFrame.MacAddress);
+                    long MacAddrNumber = Utils.MacToLong(AP.BeaconFrame.MacAddress);
                     _accessPoints.Add(MacAddrNumber, AP);
                 }
 
@@ -134,7 +143,7 @@ namespace WiFiSpy.src
                 _stations.Clear();
                 foreach (Station station in stations.ToArray())
                 {
-                    long MacAddrNumber = CapFile.MacToLong(station.SourceMacAddress);
+                    long MacAddrNumber = Utils.MacToLong(station.SourceMacAddress);
                     _stations.Add(MacAddrNumber, station);
                 }
 
@@ -144,46 +153,30 @@ namespace WiFiSpy.src
 
                 _dataFrames.Clear();
                 _dataFrames.AddRange(dataFrames.ToArray());
+
+                //merge Auth Request Frames
+                HashSet<AuthRequestFrame> authFrames = new HashSet<AuthRequestFrame>(_authRequestFrames, new AuthRequestFrame());
+                authFrames.UnionWith(capFile.AuthRequestFrames.AsEnumerable());
+
+                _authRequestFrames.Clear();
+                _authRequestFrames.AddRange(authFrames.ToArray());
             }
 
             foreach (Station station in _stations.Values)
+            {
                 station.CaptureInfo = this;
+            }
 
 
             //link all the DataFrames to the Stations
             int DataFrameCount = _dataFrames.Count;
             int DataFrameProgressValue = 0;
 
-            /*Stopwatch sw = Stopwatch.StartNew(); //1 min 46sec
-            foreach (Station station in _stations.Values)
-            {
-                long MacSourceAddrNumber = CapFile.MacToLong(station.SourceMacAddress);
-                station.ClearDataFrames();
-
-                for (int i = 0; i < _dataFrames.Count; i++)
-                {
-                    if (_dataFrames[i].SourceMacAddressLong == MacSourceAddrNumber ||
-                        _dataFrames[i].TargetMacAddressLong == MacSourceAddrNumber)
-                    {
-                        station.AddDataFrame(_dataFrames[i]);
-                        _dataFrames.RemoveAt(i);
-                        i--;
-                        DataFrameProgressValue++;
-
-                        //if (onDataFrameProgress != null)
-                        //    onDataFrameProgress(DataFrameProgressValue, DataFrameCount);
-                    }
-                }
-            }
-            sw.Stop();*/
-
-            Stopwatch sw = Stopwatch.StartNew(); //??
-
             SortedList<long, Station> StationList = new SortedList<long, Station>();
 
             foreach (Station station in _stations.Values)
             {
-                long MacSourceAddrNumber = CapFile.MacToLong(station.SourceMacAddress);
+                long MacSourceAddrNumber = Utils.MacToLong(station.SourceMacAddress);
                 station.ClearDataFrames();
 
                 if (!StationList.ContainsKey(MacSourceAddrNumber))
@@ -205,12 +198,58 @@ namespace WiFiSpy.src
                         onDataFrameProgress(DataFrameProgressValue, DataFrameCount);
                 }
             }
-            sw.Stop();
         }
 
         public Station[] GetStationsFromAP(AccessPoint AP)
         {
             return Stations.Where(o => o.DataFrames.FirstOrDefault(frame => frame.TargetMacAddressLong == AP.MacAddressLong) != null).ToArray();
+        }
+
+        /// <summary>
+        /// De-Cloak an hidden Access Point
+        /// </summary>
+        /// <param name="AP">The AP to De-Cloak</param>
+        /// <returns>De-Cloak successful ?</returns>
+        public bool DeCloakAP(AccessPoint AP, ref string SSID)
+        {
+            if (!AP.BeaconFrame.IsHidden)
+                return false;
+
+            foreach (AuthRequestFrame frame in _authRequestFrames.Where(o => o.SourceMacAddressLong == AP.MacAddressLong ||
+                                                                             o.TargetMacAddressLong == AP.MacAddressLong))
+            {
+                if(String.IsNullOrWhiteSpace(frame.SSID))
+                    continue;
+                SSID = frame.SSID;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Is the Access Point dangerous ? Running Karma/Mana modules ?
+        /// </summary>
+        /// <param name="AP"></param>
+        /// <returns></returns>
+        public bool IsAccessPointDanger(AccessPoint AP)
+        {
+            List<string> names = new List<string>();
+
+            foreach (AuthRequestFrame frame in _authRequestFrames.Where(o => (o.SourceMacAddressLong == AP.MacAddressLong ||
+                                                                             o.TargetMacAddressLong == AP.MacAddressLong) &&
+                                                                             !String.IsNullOrWhiteSpace(o.SSID)))
+            {
+                if (!names.Contains(frame.SSID))
+                    names.Add(frame.SSID);
+
+                if (names.Count > 5)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

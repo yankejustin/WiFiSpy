@@ -47,7 +47,9 @@ namespace WiFiSpy.src.GpsParsers
                        double.TryParse(Lat, out Latitude) &&
                        double.TryParse(Long, out Longitude))
                     {
-                        locations.Add(new GpsLocation(new DateTime(year, month, day, hour, minute, second), Longitude, Latitude));
+                        DateTime time = new DateTime(year, month, day, hour, minute, second);
+
+                        locations.Add(new GpsLocation(Utils.GetRealArrivalTime(time), Longitude, Latitude));
                     }
                 }
             }

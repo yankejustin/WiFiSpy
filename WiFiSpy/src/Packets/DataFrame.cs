@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WiFiSpy.src.Traffic;
 
 namespace WiFiSpy.src.Packets
 {
     public class DataFrame : IEqualityComparer<DataFrame>
     {
         private int PayloadOffset;
-        private int PayloadLen;
+        public int PayloadLen { get; private set; }
         public DateTime TimeStamp { get; private set; }
 
         public byte[] SourceMacAddress
@@ -56,7 +57,7 @@ namespace WiFiSpy.src.Packets
         {
             get
             {
-                return isIPv4 && (isTCP || isUDP);
+                return isIPv4 && (isTCP || isUDP) && PayloadLen > 0;
             }
         }
 
@@ -93,6 +94,19 @@ namespace WiFiSpy.src.Packets
             }
         }
 
+        public MDNS_Packet MulticastDNS
+        {
+            get
+            {
+                byte[] _payload = Payload;
+                if (MDNS_Packet.IsMulticastDNSMessage(this))
+                {
+                    return new MDNS_Packet(this);
+                }
+                return null;
+            }
+        }
+
         internal DataFrame()
         {
 
@@ -105,8 +119,8 @@ namespace WiFiSpy.src.Packets
             this.SourceMacAddress = DataFrame.SourceAddress.GetAddressBytes();
             this.TargetMacAddress = DataFrame.DestinationAddress.GetAddressBytes();
 
-            this.SourceMacAddressLong = CapFile.MacToLong(SourceMacAddress);
-            this.TargetMacAddressLong = CapFile.MacToLong(TargetMacAddress);
+            this.SourceMacAddressLong = Utils.MacToLong(SourceMacAddress);
+            this.TargetMacAddressLong = Utils.MacToLong(TargetMacAddress);
 
             this.FramePayload = DataFrame.Bytes;
         }
@@ -118,8 +132,8 @@ namespace WiFiSpy.src.Packets
             this.SourceMacAddress = DataFrame.SourceAddress.GetAddressBytes();
             this.TargetMacAddress = DataFrame.DestinationAddress.GetAddressBytes();
 
-            this.SourceMacAddressLong = CapFile.MacToLong(SourceMacAddress);
-            this.TargetMacAddressLong = CapFile.MacToLong(TargetMacAddress);
+            this.SourceMacAddressLong = Utils.MacToLong(SourceMacAddress);
+            this.TargetMacAddressLong = Utils.MacToLong(TargetMacAddress);
 
             this.FramePayload = DataFrame.Bytes;
 
@@ -203,7 +217,7 @@ namespace WiFiSpy.src.Packets
                 return "";
 
             string TempPayloadStr = ASCIIEncoding.ASCII.GetString(Payload, 0, Payload.Length > 512 ? 512 : Payload.Length);
-            return "[" + SourceIp + "] -> [" + DestIp + "] " + TempPayloadStr;
+            return "[" + TimeStamp.ToString("dd-MM-yyyy HH:mm:ss") + "][" + SourceIp + "] -> [" + DestIp + "] " + TempPayloadStr;
         }
 
         public bool Equals(DataFrame x, DataFrame y)

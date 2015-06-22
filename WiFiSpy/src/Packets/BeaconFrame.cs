@@ -47,11 +47,7 @@ namespace WiFiSpy.src.Packets
                     case InformationElement.ElementId.ServiceSetIdentity:
                     {
                         SSID = ASCIIEncoding.ASCII.GetString(element.Value);
-
-                        if (SSID != null && SSID.Length > 0)
-                        {
-                            IsHidden = SSID[0] == 0;
-                        }
+                        IsHidden = String.IsNullOrWhiteSpace(SSID);
                         break;
                     }
                     case InformationElement.ElementId.DsParameterSet:
@@ -88,7 +84,7 @@ namespace WiFiSpy.src.Packets
 
         public int GetHashCode(BeaconFrame obj)
         {
-            return (int)CapFile.MacToLong(obj.MacAddress);
+            return (int)Utils.MacToLong(obj.MacAddress);
         }
     }
 }

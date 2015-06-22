@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WiFiSpy.src.Packets;
+using WiFiSpy.src.Traffic;
 
 namespace WiFiSpy.src
 {
@@ -45,7 +46,7 @@ namespace WiFiSpy.src
         {
             get
             {
-                return CapFile.MacToLong(InitialProbe.SourceMacAddress);
+                return Utils.MacToLong(InitialProbe.SourceMacAddress);
             }
         }
 
@@ -101,12 +102,22 @@ namespace WiFiSpy.src
                 foreach (DataFrame dataFrame in DataFrames)
                 {
                     DhcpInfo dhcp = dataFrame.DHCP;
+                    MDNS_Packet mDNS = dataFrame.MulticastDNS;
+
                     if (dhcp != null)
                     {
                         if (!Names.Contains(dhcp.ClientHostName))
                         {
-                            Names.Add(dhcp.ClientHostName);
+                            if (!String.IsNullOrWhiteSpace(dhcp.ClientHostName))
+                            {
+                                Names.Add(dhcp.ClientHostName);
+                            }
                         }
+                    }
+
+                    if (mDNS != null)
+                    {
+
                     }
                 }
                 return Names.ToArray();
@@ -230,6 +241,15 @@ namespace WiFiSpy.src
                         LastSeenDate = probe.TimeStamp;
                     }
                 }
+
+                foreach (DataFrame frame in DataFrames)
+                {
+                    if (frame.TimeStamp > LastSeenDate)
+                    {
+                        LastSeenDate = frame.TimeStamp;
+                    }
+                }
+
                 return LastSeenDate;
             }
         }
@@ -402,7 +422,7 @@ namespace WiFiSpy.src
 
         public int GetHashCode(Station obj)
         {
-            return (int)CapFile.MacToLong(obj.SourceMacAddress);
+            return (int)Utils.MacToLong(obj.SourceMacAddress);
         }
     }
 }
